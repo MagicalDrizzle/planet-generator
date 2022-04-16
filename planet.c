@@ -2287,8 +2287,7 @@ double x;
 
 void print_error(char *filename, char *ext)
 {
-  fprintf(stderr,"Usage: planet [options]\n");
-  fprintf(stderr,"See Manual.txt for details\n");
-  fprintf(stderr,"Version: 20210623\n\n");
+  fprintf(stderr,"Usage: planet [options]\n\n");
+  fprintf(stderr,"See Manual.txt for details\n\n");
   exit(0);
 }
