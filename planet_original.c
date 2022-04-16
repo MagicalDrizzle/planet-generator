@@ -200,8 +200,8 @@ int *outx, *outy;
 int doshade = 0;
 int shade;
 unsigned short **shades; /* shade array */
-double shade_angle = 60.0; /* angle of "light" on bumpmap */
-double shade_angle2 = 21.0; /* with daylight shading, these two are
+double shade_angle = 150.0; /* angle of "light" on bumpmap */
+double shade_angle2 = 20.0; /* with daylight shading, these two are
                                longitude/latitude */
 
 double cla, sla, clo, slo, rseed;
@@ -268,7 +268,7 @@ char **av;
   void printppm(), printppmBW(), printbmp(), printbmpBW(),
        printxpm(), printxpmBW(), printheights(), print_error();
   void mercator(), peter(), squarep(), mollweide(), sinusoid(), stereo(),
-    orthographic(), orthographic2(), gnomonic(), icosahedral(), azimuth(), conical();
+    orthographic(), gnomonic(), icosahedral(), azimuth(), conical();
   int i;
   double rand2(), log_2(), planet1();
   void readcolors();
@@ -420,7 +420,6 @@ char **av;
                      case 'q' :
                      case 's' :
                      case 'o' :
-                     case 'O' :
                      case 'g' :
                      case 'a' :
                      case 'c' :
@@ -686,10 +685,6 @@ char **av;
       orthographic();
       break;
 
-    case 'O': /* Orthographic 2 hemispheres projection */
-      orthographic2();
-      break;	  
-	  
     case 'g': /* Gnomonic projection */
       gnomonic();
       break;
@@ -1253,56 +1248,6 @@ void orthographic()
         x1 = clo*x+slo*sla*y+slo*cla*z;
         y1 = cla*y-sla*z;
         z1 = -slo*x+clo*sla*y+clo*cla*z;
-        if (y1 < ymin) ymin = y1;
-        if (y1 > ymax) ymax = y1;
-        planet0(x1,y1,z1, i,j);
-      }
-    }
-  }
-}
-
-void orthographic2()
-{
-  double x,y,z,x1,y1,z1,ymin,ymax,theta1,theta2,zz;
-  int i,j;
-  void planet0();
-  double lat1, longi1;
-
-  ymin = 2.0;
-  ymax = -2.0;
-  for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
-    for (i = 0; i < Width/2 ; i++) {
-      x = (2.0*i-Width/2)/Height/scale;
-      y = (2.0*j-Height)/Height/scale;
-      if (x*x+y*y>1.0) {
-        col[i][j] = BACK;
-        if (doshade>0) shades[i][j] = 255;
-      } else {
-        z = sqrt(1.0-x*x-y*y);
-        x1 = clo*x+slo*sla*y+slo*cla*z;
-        y1 = cla*y-sla*z;
-        z1 = -slo*x+clo*sla*y+clo*cla*z;
-        if (y1 < ymin) ymin = y1;
-        if (y1 > ymax) ymax = y1;
-        planet0(x1,y1,z1, i,j);
-      }
-    }
-
-    longi1 = longi + PI;
-    lat1 = -lat;
-    for (i = Width/2; i < Width ; i++) {
-      x = (2.0*i-3*Width/2)/Height/scale;
-      y = (2.0*j-Height)/Height/scale;
-      if (x*x+y*y>1.0) {
-        col[i][j] = BACK;
-        if (doshade>0) shades[i][j] = 255;
-      } else {
-        z = sqrt(1.0-x*x-y*y);
-        x1 = cos(longi1)*x+sin(longi1)*sin(lat1)*y+sin(longi1)*cos(lat1)*z;
-        y1 = cos(lat1)*y-sin(lat1)*z;
-        z1 = -sin(longi1)*x+cos(longi1)*sin(lat1)*y+cos(longi1)*cos(lat1)*z;
         if (y1 < ymin) ymin = y1;
         if (y1 > ymax) ymax = y1;
         planet0(x1,y1,z1, i,j);
