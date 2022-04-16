@@ -1,5 +1,6 @@
 # planet-generator
 HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
+Original site (warning: no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
 I usually compile the program with clang on MSYS2:  
         `clang -O2 -flto=full planet.c -o planet.exe`  
 This produce a smaller and faster binary than gcc in my testings:  
