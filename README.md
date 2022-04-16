@@ -1,5 +1,5 @@
 # planet-generator
-HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
+HTTPS mirror of Torben Mogensen's planet generator along with modifications others made (currently, addition of the double orthographic hemispheres projection by Riviera71).  
 Original site (warning: no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
 I usually compile the program with clang on MSYS2: `clang -O2 -flto=full planet.c -o planet.exe`  
 This produce a smaller and faster binary than gcc in my testings:  
@@ -7,6 +7,9 @@ https://topps.diku.dk/torbenm/thread.msp?topic=723973154
 Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is Olsson.col.  
 You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone)  
 More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
+
+Also most of the smartness and wonderfulness came from Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649, I'm just the one doing random things...   
+
 
 ### Original readme file
 ```
