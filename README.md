@@ -9,7 +9,7 @@ You can change which default file the program use in the code, but there's curre
 More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
 
 ### Original readme file
-
+```
 ReadMe file for the planet generating program "Planet".
 Copyright 1988-2009 Torben Æ. Mogensen
 
@@ -67,9 +67,9 @@ Enquiries and error reports can be sent to torbenm@diku.dk.
 Acknowledgements:
 
 I thank Jim Burrows for contributions to the code.
-
+```
 ### Additional copyright information on Torben's website
-Both the program itself and maps created by the program are free for use, modification and reproduction, both privately and for commercial purposes, as long as this does not limit what other people may do with the program and images they produce with the program.  
+```Both the program itself and maps created by the program are free for use, modification and reproduction, both privately and for commercial purposes, as long as this does not limit what other people may do with the program and images they produce with the program.  
 For example, you can not copyright an image produced by the program unless you have substantially modified it afterwards, because other people might use the same parameters as you used to produce the same image.  
 If you add code to the program that you do not wish to share, you can claim copyright for the code you write yourself, but that does not extend to the program as a whole.  
 If you are in doubt about any particular use, you are welcome to contact me using the email address at the bottom if this page.  
@@ -77,3 +77,4 @@ If you are in doubt about any particular use, you are welcome to contact me usin
 Torben Mogensen  
 DIKU, University of Copenhagen, Universitetsparken 5, DK-2100 København Ø  
 E-mail: torbenm@di.ku.dk Telephone: (+45) 21 84 96 72 Fax: (+45) 35 32 14 01
+```
