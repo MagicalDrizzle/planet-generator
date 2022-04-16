@@ -4,6 +4,9 @@ I usually compile the program with clang on MSYS2:
         `clang -O2 -flto=full planet.c -o planet.exe`  
 This produce a smaller and faster binary than gcc in my testings:  
 https://topps.diku.dk/torbenm/thread.msp?topic=723973154  
+Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is Olsson.col.  
+You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone)  
+More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
 
 ### Original readme file
 
