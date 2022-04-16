@@ -4,6 +4,9 @@
 
 /* version of 23 June 2021 */
 
+/* Dual hemispheres orthographic projection from Riviera71 */
+/* https://topps.diku.dk/torbenm/thread.msp?topic=218566649 */
+
 /* The program generates planet maps based on recursive spatial subdivision */
 /* of a tetrahedron containing the globe. The output is a colour BMP bitmap. */
 /* with options for PPM or B/W bitmaps */
@@ -353,7 +356,6 @@ char **av;
                    while (longi<-180) longi += 360;
                    while (longi>180) longi -= 360;
                    break;
-                   break;
         case 'L' : sscanf(av[++i],"%lf",&lat);
                    if (lat<-90) lat = -90;
                    if (lat>90) lat = 90;
@@ -625,7 +627,7 @@ char **av;
   if (view == 'c') {
     if (lat == 0) view = 'm';
         /* Conical approaches mercator when lat -> 0 */
-    if (abs(lat) >= PI - 0.000001) view = 's';
+    if (fabs(lat) >= PI - 0.000001) view = 's';
         /* Conical approaches stereo when lat -> +/- 90 */
   }
 
@@ -2287,7 +2289,8 @@ double x;
 
 void print_error(char *filename, char *ext)
 {
-  fprintf(stderr,"Usage: planet [options]\n\n");
-  fprintf(stderr,"See Manual.txt for details\n\n");
+  fprintf(stderr,"Usage: planet [options]\n");
+  fprintf(stderr,"See Manual.txt for details\n");
+  fprintf(stderr,"Version: 20210623-Riviera71\n\n");
   exit(0);
 }
