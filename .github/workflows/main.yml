@@ -11,9 +11,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: msys2/setup-msys2@v2
         with:
+          release: false
           msystem: CLANG64
-          update: true
-          install: git mingw-w64-clang-x86_64-toolchain
+          update: false
+          install: git mingw-w64-clang-x86_64-clang
       - name: CI-Build
         run: |
           clang -O2 -flto=full planet.c -o planet.exe
