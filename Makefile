@@ -6,7 +6,7 @@ CC=clang
 
 # And change this to your favourite C compiler flags:
 #CFLAGS = -O -g -W -Wall -D_USE_LIBM_MATH_H
-CFLAGS = -O2
+CFLAGS = -O2 -flto=full
 
 OBJS = planet.o 
 
