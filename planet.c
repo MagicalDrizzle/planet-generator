@@ -2290,7 +2290,7 @@ double x;
 void print_error(char *filename, char *ext)
 {
   fprintf(stderr,"Usage: planet [options]\n");
-  fprintf(stderr,"See Manual.txt for details\n");
+  fprintf(stderr,"See Manual.pdf for details\n");
   fprintf(stderr,"Version: 20210623-Riviera71\n\n");
   exit(0);
 }
