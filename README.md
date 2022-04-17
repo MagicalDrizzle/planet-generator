@@ -7,7 +7,11 @@ https://topps.diku.dk/torbenm/thread.msp?topic=723973154
 Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is Olsson.col.  
 You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone).  
 More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
-
+```c
+char filename[256] = "planet-map";
+char colorsname[256] = "Olsson.col"; /* << change that */
+int do_file = 0, tmp = 0;
+```
 Also most of the smartness and wonderfulness came from Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649, I'm just the one doing random things...   
 I have set up a very basic workflow to automate the builds using `clang -O2 -flto=full`, you can download the artifacts [here](https://github.com/MagicalDrizzle/planet-generator/actions) (choose the latest successful run).
 
