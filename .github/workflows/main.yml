@@ -23,4 +23,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifact
-          path: planet*.exe
+          path: |
+            planet.exe
+            planet_original.exe
+      - name: release artifact
+        uses: softprops/action-gh-release@v1
+        with: 
+          files: |
+            planet.exe
+            planet_original.exe
+          
