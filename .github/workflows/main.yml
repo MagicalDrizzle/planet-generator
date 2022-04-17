@@ -15,4 +15,11 @@ jobs:
           update: true
           install: git mingw-w64-clang-x86_64-toolchain
       - name: CI-Build
-        run: clang -O2 -flto=full planet.c -o planet.exe
+        run: |
+          clang -O2 -flto=full planet.c -o planet.exe
+          clang -O2 -flto=full planet_original.c -o planet_original.exe
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: planet*.exe
