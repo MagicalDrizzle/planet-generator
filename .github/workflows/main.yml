@@ -19,18 +19,11 @@ jobs:
         run: |
           clang -O2 -flto=full planet.c -o planet.exe
           clang -O2 -flto=full planet_original.c -o planet_original.exe
-      - uses: msys2/setup-msys2@v2
-        with:
-          release: false
-          msystem: CLANG32
-          update: false
-          install: git
-      - name: 32bit-build
-        run: |
           printf "[clang32]\nInclude = /etc/pacman.d/mirrorlist.mingw" >> /etc/pacman.conf
+          export MSYSTEM=clang32
           pacman -Syu mingw-w64-clang-i686-clang
           clang -O2 -flto=full planet.c -o planet32.exe
-          clang -O2 -flto=full planet_original.c -o planet_original32.exe
+          clang -O2 -flto=full planet_original.c -o planet_original32.exe        
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
