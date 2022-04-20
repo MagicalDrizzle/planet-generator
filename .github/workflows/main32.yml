@@ -11,12 +11,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: msys2/setup-msys2@v2
         with:
-          release: false
+          release: true
           msystem: CLANG32
           update: false
-          install: mingw-w64-clang-i686-clang
       - name: CI-Build
         run: |
+          printf "[clang32]\nInclude = /etc/pacman.d/mirrorlist.mingw" >> /etc/pacman.conf
+          pacman -Sy mingw-w64-clang-i686-clang 
           clang -O2 -flto=full planet.c -o planet32.exe
           clang -O2 -flto=full planet_original.c -o planet32_original.exe
       - name: Upload Build Artifact
