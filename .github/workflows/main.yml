@@ -19,6 +19,16 @@ jobs:
         run: |
           clang -O2 -flto=full planet.c -o planet.exe
           clang -O2 -flto=full planet_original.c -o planet_original.exe
+      - uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          msystem: CLANG32
+          update: false
+          install: git mingw-w64-clang-i686-clang
+      - name: 32bit-build
+        run: |
+          clang -O2 -flto=full planet.c -o planet32.exe
+          clang -O2 -flto=full planet_original.c -o planet_original32.exe
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -26,3 +36,6 @@ jobs:
           path: |
             planet.exe
             planet_original.exe
+            planet32.exe
+            planet_original32.exe
+          
