@@ -24,9 +24,11 @@ jobs:
           release: false
           msystem: CLANG32
           update: false
-          install: git mingw-w64-clang-i686-clang
+          install: git
       - name: 32bit-build
         run: |
+          printf "[clang32]\nInclude = /etc/pacman.d/mirrorlist.mingw" >> /etc/pacman.conf
+          pacman -Sy
           clang -O2 -flto=full planet.c -o planet32.exe
           clang -O2 -flto=full planet_original.c -o planet_original32.exe
       - name: Upload Build Artifact
@@ -37,5 +39,5 @@ jobs:
             planet.exe
             planet_original.exe
             planet32.exe
-            planet_original32.exe
+            planet32_original.exe
           
