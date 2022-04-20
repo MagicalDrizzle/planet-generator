@@ -14,17 +14,11 @@ jobs:
           release: false
           msystem: CLANG64
           update: false
-          install: git mingw-w64-clang-x86_64-clang
+          install: mingw-w64-clang-x86_64-clang
       - name: CI-Build
         run: |
           clang -O2 -flto=full planet.c -o planet.exe
           clang -O2 -flto=full planet_original.c -o planet_original.exe
-      - run: |
-          printf "[clang32]\nInclude = /etc/pacman.d/mirrorlist.mingw" >> /etc/pacman.conf
-          pacman -Sy mingw-w64-clang-i686-clang
-          export MSYSTEM=CLANG32
-          clang -O2 -flto=full planet.c -o planet32.exe
-          clang -O2 -flto=full planet_original.c -o planet_original32.exe
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -32,6 +26,4 @@ jobs:
           path: |
             planet.exe
             planet_original.exe
-            planet32.exe
-            planet32_original.exe
           
