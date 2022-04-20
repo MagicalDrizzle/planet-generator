@@ -28,7 +28,7 @@ jobs:
       - name: 32bit-build
         run: |
           printf "[clang32]\nInclude = /etc/pacman.d/mirrorlist.mingw" >> /etc/pacman.conf
-          pacman -Sy mingw-w64-clang-i686-clang
+          pacman -Syu mingw-w64-clang-i686-clang
           clang -O2 -flto=full planet.c -o planet32.exe
           clang -O2 -flto=full planet_original.c -o planet_original32.exe
       - name: Upload Build Artifact
