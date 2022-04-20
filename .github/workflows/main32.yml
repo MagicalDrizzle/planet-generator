@@ -1,0 +1,29 @@
+name: build planet (32bits)
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          msystem: CLANG32
+          update: false
+          install: mingw-w64-clang-i686-clang
+      - name: CI-Build
+        run: |
+          clang -O2 -flto=full planet.c -o planet32.exe
+          clang -O2 -flto=full planet_original.c -o planet32_original.exe
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: |
+            planet32.exe
+            planet32_original.exe
+          
