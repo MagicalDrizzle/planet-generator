@@ -19,6 +19,7 @@ jobs:
         run: |
           clang -O2 -flto=full planet.c -o planet.exe
           clang -O2 -flto=full planet_original.c -o planet_original.exe
+          strip -s planet.exe planet_original.exe
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
