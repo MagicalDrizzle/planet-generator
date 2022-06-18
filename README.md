@@ -1,9 +1,14 @@
 # planet-generator
-HTTPS mirror of Torben Mogensen's planet generator along with modifications others made (currently, addition of the double orthographic hemispheres projection by Riviera71).  
-Original site (warning: no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
-I usually compile the program with clang on MSYS2: `clang -O2 -flto=full planet.c -o planet.exe`  
-This produce a smaller and faster binary than gcc in my testings:  
-https://topps.diku.dk/torbenm/thread.msp?topic=723973154  
+HTTPS mirror of Torben Mogensen's planet generator along with modifications others made (currently, addition of the double orthographic hemispheres projection by `Riviera71`).  
+Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/
+ -`planet_original.c`: Torben's original code
+ -`planet.c`: The modified code described at the start
+ -`planet_clinatesim.c`: The same as `planet.c`, but using the biomes color scheme of: https://space.geometrian.com/calcs/climate-sim.php
+
+`clang` and `msvc` has dropped support for old-style declarations. As of now only `gcc` is able to compile the program.  
+More info: https://topps.diku.dk/torbenm/thread.msp?topic=692986545  
+How I usually compile the program: `gcc -O2 -flto -fuse-linker-plugin -lm planet.c -o planet.exe && strip planet.exe`  
+
 Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is Olsson.col.  
 You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone).  
 More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
@@ -12,10 +17,8 @@ char filename[256] = "planet-map";
 char colorsname[256] = "Olsson.col"; /* << change that */
 int do_file = 0, tmp = 0;
 ```
-Also most of the smartness and wonderfulness came from Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649, I'm just the one doing random things...   
-I have set up a very basic workflow to automate the builds using `clang -O2 -flto=full`, you can download the artifacts [here](https://github.com/MagicalDrizzle/planet-generator/actions) (choose the latest successful run).
-
-### Original readme file
+Also most of the smartness and wonderfulness came from Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649, I'm just the one doing random things...  
+### Original readme file with copyright information
 ```
 ReadMe file for the planet generating program "Planet".
 Copyright 1988-2009 Torben Æ. Mogensen

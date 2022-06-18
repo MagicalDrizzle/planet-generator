@@ -1,12 +1,10 @@
 # Makefile for "planet", a fractal planet generator
 
 # Change the following if your C compiler isn't called 'gcc'.
-#CC=gcc
-CC=clang
+CC=gcc
 
 # And change this to your favourite C compiler flags:
-#CFLAGS = -O -g -W -Wall -D_USE_LIBM_MATH_H
-CFLAGS = -O2 -flto=full
+CFLAGS = -O2 -g -W -Wall -D_USE_LIBM_MATH_H
 
 OBJS = planet.o 
 
@@ -18,8 +16,7 @@ LIBS = -lm
 all:	planet
 
 planet: $(OBJS)
-	#$(CC) $(CFLAGS) -o planet $(OBJS) $(LIBS)
-	$(CC) $(CFLAGS) -o planet $(OBJS)
+	$(CC) $(CFLAGS) -o planet $(OBJS) $(LIBS)
 	@echo "planet made"
 
 clean:
