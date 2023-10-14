@@ -1,9 +1,9 @@
 # planet-generator
 HTTPS mirror of Torben Mogensen's planet generator along with modifications others made (currently, addition of the double orthographic hemispheres projection by `Riviera71`).  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
--`planet_original.c`: Torben's original code  
--`planet.c`: The modified code described at the start  
--`planet_clinatesim.c`: The same as `planet.c`, but using the biomes color scheme of: https://space.geometrian.com/calcs/climate-sim.php  
+- `planet_original.c`: Torben's original code  
+- `planet.c`: The modified code described at the start  
+- `planet_clinatesim.c`: The same as `planet.c`, but using the biomes color scheme of: https://space.geometrian.com/calcs/climate-sim.php  
 
 `clang` and `msvc` has dropped support for old-style declarations. As of now only `gcc` is able to compile the program.  
 More info: https://topps.diku.dk/torbenm/thread.msp?topic=692986545  
