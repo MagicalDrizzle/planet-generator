@@ -353,7 +353,7 @@ char **av;
                    break;
         case 'x' : file_type =xpm;
                    break;
-        case 'R' : fprintf(stdout,"Version: %s\-mod\n", version);
+        case 'R' : fprintf(stdout,"Version: %s-mod\n", version);
                    fprintf(stdout,"Homepage: https://topps.diku.dk/torbenm/maps.msp\n");
                    fprintf(stdout,"Modified: https://topps.diku.dk/torbenm/thread.msp?topic=218566649\n");
 				   exit(0);
