@@ -61,8 +61,6 @@ int SEA = 7;
 int LAND = 8;
 int HIGHEST = 9;
 
-int debug = 0;
-
 int nonLinear = 0;
 
 char view;
@@ -312,7 +310,6 @@ char **av;
   _fcreator ='ttxt';
 
   ac = ccommand (&av);
-  debug = 1;
   do_file = 1;
 #endif
 
@@ -338,8 +335,6 @@ char **av;
   for (i = 1; i<ac; i++) {
     if (av[i][0] == '-') {
       switch (av[i][1]) {
-        case 'X' : debug = 1;
-                   break;
         case 'V' : sscanf(av[++i],"%lf",&dd2);
                    break;
         case 'v' : sscanf(av[++i],"%lf",&dd1);
@@ -669,9 +664,10 @@ char **av;
   tetra[2].shadow = 0.0;
   tetra[3].shadow = 0.0;
 
-  if (debug && (view != 'f'))
-    fprintf(stderr, "+----+----+----+----+----+\n");
-
+  if (view != 'f') {  
+    fprintf(stdout, "Progress:\n");
+    fprintf(stdout, "0----------50---------100\%\n");
+	}
   switch (view) {
 
     case 'm': /* Mercator projection */
@@ -770,8 +766,7 @@ char **av;
 
   if (doshade>0) smoothshades();
 
-  if (debug)
-    fprintf(stderr, "\n");
+  fprintf(stdout, "\n");
 
   /* plot picture */
   switch (file_type)
@@ -1053,8 +1048,8 @@ void mercator()
   y = 0.5*log(y);
   k = (int)(0.5*y*Width*scale/PI+0.5);
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     y = PI*(2.0*(j-k)-Height)/Width/scale;
     y = exp(2.*y);
     y = (y-1.)/(y+1.);
@@ -1078,8 +1073,8 @@ void peter()
   k = (int)(0.5*y*Width*scale/PI+0.5);
   water = land = 0;
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     y = 0.5*PI*(2.0*(j-k)-Height)/Width/scale;
     if (fabs(y)>1.0)
       for (i = 0; i < Width ; i++) {
@@ -1099,9 +1094,8 @@ void peter()
       }
     }
   }
-  if (debug)
-    fprintf(stderr,"\n");
-  fprintf(stderr,"water percentage: %d\n",100*water/(water+land));
+  fprintf(stdout,"\n");
+  fprintf(stdout,"water percentage: %d%%",100*water/(water+land));
 }
 
 void squarep()
@@ -1112,8 +1106,8 @@ void squarep()
 
   k = (int)(0.5*lat*Width*scale/PI+0.5);
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     y = (2.0*(j-k)-Height)/Width/scale*PI;
     if (fabs(y+y)>PI)
       for (i = 0; i < Width ; i++) {
@@ -1140,8 +1134,8 @@ void mollweide()
   void planet0();
 
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     y1 = 2*(2.0*j-Height)/Width/scale;
     if (fabs(y1)>=1.0) for (i = 0; i < Width ; i++) {
       col[i][j] = BACK;
@@ -1184,8 +1178,8 @@ void sinusoid()
 
   k = (int)(lat*Width*scale/PI+0.5);
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     y = (2.0*(j-k)-Height)/Width/scale*PI;
     if (fabs(y+y)>PI) for (i = 0; i < Width ; i++) {
       col[i][j] = BACK;
@@ -1222,8 +1216,8 @@ void stereo()
   void planet0();
 
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     for (i = 0; i < Width ; i++) {
       x = (2.0*i-Width)/Height/scale;
       y = (2.0*j-Height)/Height/scale;
@@ -1249,8 +1243,8 @@ void orthographic()
   void planet0();
 
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     for (i = 0; i < Width ; i++) {
       x = (2.0*i-Width)/Height/scale;
       y = (2.0*j-Height)/Height/scale;
@@ -1278,8 +1272,8 @@ void orthographic2()
   ymin = 2.0;
   ymax = -2.0;
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     for (i = 0; i < Width/2 ; i++) {
       x = (2.0*i-Width/2)/Height/scale;
       y = (2.0*j-Height)/Height/scale;
@@ -1331,8 +1325,8 @@ void icosahedral() /* modified version of gnomonic */
   L2 = -52.622632; /* theoretically -48.3100310579607; */
   S = 55.6; /* found by experimentation */
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     for (i = 0; i < Width ; i++) {
 
       x0 = 198.0*(2.0*i-Width)/Width/scale-36;
@@ -1466,8 +1460,8 @@ void gnomonic()
 
   if (scale<1.0) Depth = 3*((int)(log_2(scale*Height)))+6+1.5/scale;
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     for (i = 0; i < Width ; i++) {
       x = (2.0*i-Width)/Height/scale;
       y = (2.0*j-Height)/Height/scale;
@@ -1490,8 +1484,8 @@ void azimuth()
   void planet0();
 
   for (j = 0; j < Height; j++) {
-    if (debug && ((j % (Height/25)) == 0))
-      {fprintf (stderr, "%c", view); fflush(stderr);}
+    if ((j % (Height/25)) == 0)
+      {fprintf (stdout, "+"); fflush(stdout);}
     for (i = 0; i < Width ; i++) {
       x = (2.0*i-Width)/Height/scale;
       y = (2.0*j-Height)/Height/scale;
@@ -1526,8 +1520,8 @@ void conical()
     c = k1*k1;
     y2 = sqrt(c*(1.0-sin(lat/k1))/(1.0+sin(lat/k1)));
     for (j = 0; j < Height; j++) {
-      if (debug && ((j % (Height/25)) == 0))
-        {fprintf (stderr, "%c", view); fflush(stderr);}
+      if ((j % (Height/25)) == 0)
+        {fprintf (stdout, "+"); fflush(stdout);}
       for (i = 0; i < Width ; i++) {
         x = (2.0*i-Width)/Height/scale;
         y = (2.0*j-Height)/Height/scale+y2;
@@ -1556,8 +1550,8 @@ void conical()
     c = k1*k1;
     y2 = sqrt(c*(1.0-sin(lat/k1))/(1.0+sin(lat/k1)));
     for (j = 0; j < Height; j++) {
-      if (debug && ((j % (Height/25)) == 0))
-        {fprintf (stderr, "%c", view); fflush(stderr);}
+      if ((j % (Height/25)) == 0)
+        {fprintf (stdout, "+"); fflush(stdout);}
       for (i = 0; i < Width ; i++) {
         x = (2.0*i-Width)/Height/scale;
         y = (2.0*j-Height)/Height/scale-y2;
