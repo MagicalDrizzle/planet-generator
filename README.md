@@ -1,13 +1,13 @@
 # planet-generator
 HTTPS mirror of Torben Mogensen's planet generator along with modifications others made (currently, addition of the double orthographic hemispheres projection by `Riviera71`).  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
-- `planet_original.c`: Torben's original code  
-- `planet.c`: The modified code described at the start  
-- `planet_clinatesim.c`: The same as `planet.c`, but using the biomes color scheme of: https://space.geometrian.com/calcs/climate-sim.php  
+- `planet.c`: Torben's original code  
+- `planet_mod.c`: The modified code described at the start  
+- `planet_mod_clinatesim.c`: The same as `planet_mod.c`, but using the biomes color scheme of: https://space.geometrian.com/calcs/climate-sim.php  
 
 `clang` and `msvc` has dropped support for old-style declarations. As of now only `gcc` is able to compile the program.  
 More info: https://topps.diku.dk/torbenm/thread.msp?topic=692986545  
-How I usually compile the program: `gcc -O2 -flto -fuse-linker-plugin -lm planet.c -o planet.exe && strip planet.exe`  
+How I usually compile the program: `gcc -O2 planet.c -o planet.exe && strip planet.exe`  
 
 Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is Olsson.col.  
 You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone).  

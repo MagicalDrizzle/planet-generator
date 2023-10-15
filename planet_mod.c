@@ -2,7 +2,10 @@
 /* planet generating program */
 /* Copyright 1988--present Torben AE. Mogensen */
 
-/* version of June 2021 */
+char version[] = "September 2023";
+
+/* Dual hemispheres orthographic projection from Riviera71 */
+/* https://topps.diku.dk/torbenm/thread.msp?topic=218566649 */
 
 /* The program generates planet maps based on recursive spatial subdivision */
 /* of a tetrahedron containing the globe. The output is a colour BMP bitmap. */
@@ -73,6 +76,10 @@ int rtable[65536], gtable[65536], btable[65536];
     PPM - Portable Pix Maps
     XPM - X-windows Pix Maps
  */
+
+double log_2(x)
+double x;
+{ return(log(x)/log(2.0)); }
 
 typedef enum ftype
     {
@@ -201,8 +208,11 @@ int doshade = 0;
 int shade;
 unsigned short **shades; /* shade array */
 double shade_angle = 150.0; /* angle of "light" on bumpmap */
-double shade_angle2 = 20.0; /* with daylight shading, these two are
-                               longitude/latitude */
+double shade_angle2 = 20.0; /* with daylight shading, these two are longitude/latitude */
+
+// Riviera71 modifications
+// double shade_angle = 60.0;
+// double shade_angle2 = 21.0;
 
 double cla, sla, clo, slo, rseed;
 
@@ -268,9 +278,9 @@ char **av;
   void printppm(), printppmBW(), printbmp(), printbmpBW(),
        printxpm(), printxpmBW(), printheights(), print_error();
   void mercator(), peter(), squarep(), mollweide(), sinusoid(), stereo(),
-    orthographic(), gnomonic(), icosahedral(), azimuth(), conical();
+    orthographic(), orthographic2(), gnomonic(), icosahedral(), azimuth(), conical();
   int i;
-  double rand2(), log_2(), planet1();
+  double rand2(),  planet1();
   void readcolors();
   void readmap(), makeoutline(), smoothshades();
   FILE *outfile, *colfile = NULL;
@@ -315,9 +325,9 @@ char **av;
   outfile = stdout;
 
 #ifdef WIN32
-  setmode(fileno(outfile), O_BINARY);
+  _setmode(fileno(outfile), O_BINARY);
 #elif _WIN32
-  setmode(fileno(outfile), O_BINARY);
+  _setmode(fileno(outfile), O_BINARY);
 #endif
 
   strcpy(cmdLine,"");
@@ -341,18 +351,20 @@ char **av;
         case 'h' : sscanf(av[++i],"%d",&Height);
                    break;
         case 'm' : sscanf(av[++i],"%lf",&scale);
+	           if (scale < 0.1) scale = 0.1;
                    break;
         case 'o' : sscanf(av[++i],"%s",filename);
                    do_file = 1;
                    break;
         case 'x' : file_type =xpm;
                    break;
+        case 'R' : fprintf(stderr, "Version: %s\n", version);
+                   break;
         case 'C' : sscanf(av[++i],"%s",colorsname);
                    break;
         case 'l' : sscanf(av[++i],"%lf",&longi);
                    while (longi<-180) longi += 360;
                    while (longi>180) longi -= 360;
-                   break;
                    break;
         case 'L' : sscanf(av[++i],"%lf",&lat);
                    if (lat<-90) lat = -90;
@@ -420,6 +432,7 @@ char **av;
                      case 'q' :
                      case 's' :
                      case 'o' :
+                     case 'O' :                     
                      case 'g' :
                      case 'a' :
                      case 'c' :
@@ -621,11 +634,12 @@ char **av;
     }
   }
 
-  if (view == 'c') {
+  if (view == 'c' || view == 'm') {
     if (lat == 0) view = 'm';
         /* Conical approaches mercator when lat -> 0 */
-    if (abs(lat) >= PI - 0.000001) view = 's';
+    if (fabs(lat) >= PI - 0.000001) view = 's';
         /* Conical approaches stereo when lat -> +/- 90 */
+        /* Also to avoid division by 0 for Mercator when lat -> +/- 90 */
   }
 
   Depth = 3*((int)(log_2(scale*Height)))+6;
@@ -683,6 +697,10 @@ char **av;
 
     case 'o': /* Orthographic projection */
       orthographic();
+      break;
+
+    case 'O': /* Orthographic 2 hemispheres projection */
+      orthographic2();
       break;
 
     case 'g': /* Gnomonic projection */
@@ -827,11 +845,11 @@ void readcolors(FILE *colfile, char* colorsname)
           /* interpolate colours between oldcNum and cNum */
           for (i = oldcNum+1; i<cNum; i++) {
             rtable[i] = (rtable[oldcNum]*(cNum-i)+rtable[cNum]*(i-oldcNum))
-                        / (cNum-oldcNum+1);
+                        / (cNum-oldcNum);
             gtable[i] = (gtable[oldcNum]*(cNum-i)+gtable[cNum]*(i-oldcNum))
-                        / (cNum-oldcNum+1);
+                        / (cNum-oldcNum);
             btable[i] = (btable[oldcNum]*(cNum-i)+btable[cNum]*(i-oldcNum))
-                        / (cNum-oldcNum+1);
+                        / (cNum-oldcNum);
           }
         }
     }
@@ -1023,7 +1041,7 @@ void smoothshades()
 
 void mercator()
 {
-  double y,scale1,cos2,theta1, log_2();
+  double y,scale1,cos2,theta1;
   int i,j,k;
   void planet0();
 
@@ -1049,7 +1067,7 @@ void mercator()
 
 void peter()
 {
-  double y,cos2,theta1,scale1, log_2();
+  double y,cos2,theta1,scale1;
   int k,i,j,water,land;
   void planet0();
 
@@ -1085,7 +1103,7 @@ void peter()
 
 void squarep()
 {
-  double y,scale1,theta1,cos2, log_2();
+  double y,scale1,theta1,cos2;
   int k,i,j;
   void planet0();
 
@@ -1114,7 +1132,7 @@ void squarep()
 
 void mollweide()
 {
-  double y,y1,zz,scale1,cos2,theta1,theta2, log_2();
+  double y,y1,zz,scale1,cos2,theta1,theta2;
   int i,j,i1=1,k;
   void planet0();
 
@@ -1157,7 +1175,7 @@ void mollweide()
 
 void sinusoid()
 {
-  double y,theta1,theta2,cos2,l1,i1,scale1, log_2();
+  double y,theta1,theta2,cos2,l1,i1,scale1;
   int k,i,j,l,c;
   void planet0();
 
@@ -1195,12 +1213,11 @@ void sinusoid()
 
 void stereo()
 {
-  double x,y,ymin,ymax,z,zz,x1,y1,z1,theta1,theta2;
+  double x,y,z,zz,x1,y1,z1,theta1,theta2;
   int i,j;
+  double scale1;
   void planet0();
 
-  ymin = 2.0;
-  ymax = -2.0;
   for (j = 0; j < Height; j++) {
     if (debug && ((j % (Height/25)) == 0))
       {fprintf (stderr, "%c", view); fflush(stderr);}
@@ -1215,11 +1232,7 @@ void stereo()
       x1 = clo*x+slo*sla*y+slo*cla*z;
       y1 = cla*y-sla*z;
       z1 = -slo*x+clo*sla*y+clo*cla*z;
-      if (y1 < ymin) ymin = y1;
-      if (y1 > ymax) ymax = y1;
-
-      /* for level-of-detail effect:
-         Depth = 3*((int)(log_2(scale*Height)/(1.0+x1*x1+y1*y1)))+6; */
+      if (scale<1.0) Depth = 3*((int)(log_2(scale*Height)))+6+1.5/scale;
 
       planet0(x1,y1,z1, i,j);
     }
@@ -1228,12 +1241,10 @@ void stereo()
 
 void orthographic()
 {
-  double x,y,z,x1,y1,z1,ymin,ymax,theta1,theta2,zz;
+  double x,y,z,x1,y1,z1,theta1,theta2,zz;
   int i,j;
   void planet0();
 
-  ymin = 2.0;
-  ymax = -2.0;
   for (j = 0; j < Height; j++) {
     if (debug && ((j % (Height/25)) == 0))
       {fprintf (stderr, "%c", view); fflush(stderr);}
@@ -1248,24 +1259,70 @@ void orthographic()
         x1 = clo*x+slo*sla*y+slo*cla*z;
         y1 = cla*y-sla*z;
         z1 = -slo*x+clo*sla*y+clo*cla*z;
-        if (y1 < ymin) ymin = y1;
-        if (y1 > ymax) ymax = y1;
         planet0(x1,y1,z1, i,j);
       }
     }
   }
 }
 
+void orthographic2()
+{
+  double x,y,z,x1,y1,z1,ymin,ymax,theta1,theta2,zz;
+  int i,j;
+  void planet0();
+  double lat1, longi1;
+
+  ymin = 2.0;
+  ymax = -2.0;
+  for (j = 0; j < Height; j++) {
+    if (debug && ((j % (Height/25)) == 0))
+      {fprintf (stderr, "%c", view); fflush(stderr);}
+    for (i = 0; i < Width/2 ; i++) {
+      x = (2.0*i-Width/2)/Height/scale;
+      y = (2.0*j-Height)/Height/scale;
+      if (x*x+y*y>1.0) {
+        col[i][j] = BACK;
+        if (doshade>0) shades[i][j] = 255;
+      } else {
+        z = sqrt(1.0-x*x-y*y);
+        x1 = clo*x+slo*sla*y+slo*cla*z;
+        y1 = cla*y-sla*z;
+        z1 = -slo*x+clo*sla*y+clo*cla*z;
+        if (y1 < ymin) ymin = y1;
+        if (y1 > ymax) ymax = y1;
+        planet0(x1,y1,z1, i,j);
+      }
+    }
+
+    longi1 = longi + PI;
+    lat1 = -lat;
+    for (i = Width/2; i < Width ; i++) {
+      x = (2.0*i-3*Width/2)/Height/scale;
+      y = (2.0*j-Height)/Height/scale;
+      if (x*x+y*y>1.0) {
+        col[i][j] = BACK;
+        if (doshade>0) shades[i][j] = 255;
+      } else {
+        z = sqrt(1.0-x*x-y*y);
+        x1 = cos(longi1)*x+sin(longi1)*sin(lat1)*y+sin(longi1)*cos(lat1)*z;
+        y1 = cos(lat1)*y-sin(lat1)*z;
+        z1 = -sin(longi1)*x+cos(longi1)*sin(lat1)*y+cos(longi1)*cos(lat1)*z;
+        if (y1 < ymin) ymin = y1;
+        if (y1 > ymax) ymax = y1;
+        planet0(x1,y1,z1, i,j);
+      }
+    }    
+  }
+}
+
 void icosahedral() /* modified version of gnomonic */
 {
-  double x,y,z,x1,y1,z1,zz,theta1,theta2,ymin,ymax;
+  double x,y,z,x1,y1,z1,zz,theta1,theta2;
   int i,j;
   void planet0();
   double lat1, longi1, sla, cla, slo, clo, x0, y0, sq3_4, sq3;
   double L1, L2, S;
 
-  ymin = 2.0;
-  ymax = -2.0;
   sq3 = sqrt(3.0);
   L1 =  10.812317; /* theoretically 10.9715145571469; */
   L2 = -52.622632; /* theoretically -48.3100310579607; */
@@ -1392,8 +1449,6 @@ void icosahedral() /* modified version of gnomonic */
         y1 = cla*y-sla*z;
         z1 = -slo*x+clo*sla*y+clo*cla*z;
 
-        if (y1 < ymin) ymin = y1;
-        if (y1 > ymax) ymax = y1;
         planet0(x1,y1,z1, i,j);
       }
     }
@@ -1402,12 +1457,11 @@ void icosahedral() /* modified version of gnomonic */
 
 void gnomonic()
 {
-  double x,y,z,x1,y1,z1,zz,theta1,theta2,ymin,ymax;
+  double x,y,z,x1,y1,z1,zz,theta1,theta2;
   int i,j;
   void planet0();
 
-  ymin = 2.0;
-  ymax = -2.0;
+  if (scale<1.0) Depth = 3*((int)(log_2(scale*Height)))+6+1.5/scale;
   for (j = 0; j < Height; j++) {
     if (debug && ((j % (Height/25)) == 0))
       {fprintf (stderr, "%c", view); fflush(stderr);}
@@ -1421,8 +1475,6 @@ void gnomonic()
       x1 = clo*x+slo*sla*y+slo*cla*z;
       y1 = cla*y-sla*z;
       z1 = -slo*x+clo*sla*y+clo*cla*z;
-      if (y1 < ymin) ymin = y1;
-      if (y1 > ymax) ymax = y1;
       planet0(x1,y1,z1, i,j);
     }
   }
@@ -1430,12 +1482,10 @@ void gnomonic()
 
 void azimuth()
 {
-  double x,y,z,x1,y1,z1,zz,theta1,theta2,ymin,ymax;
+  double x,y,z,x1,y1,z1,zz,theta1,theta2;
   int i,j;
   void planet0();
 
-  ymin = 2.0;
-  ymax = -2.0;
   for (j = 0; j < Height; j++) {
     if (debug && ((j % (Height/25)) == 0))
       {fprintf (stderr, "%c", view); fflush(stderr);}
@@ -1454,8 +1504,6 @@ void azimuth()
         x1 = clo*x+slo*sla*y+slo*cla*z;
         y1 = cla*y-sla*z;
         z1 = -slo*x+clo*sla*y+clo*cla*z;
-        if (y1 < ymin) ymin = y1;
-        if (y1 > ymax) ymax = y1;
         planet0(x1,y1,z1, i,j);
       }
     }
@@ -1464,12 +1512,12 @@ void azimuth()
 
 void conical()
 {
-  double k1,c,y2,x,y,zz,x1,y1,z1,theta1,theta2,ymin,ymax,cos2;
+  double k1,c,y2,x,y,zz,x1,y1,z1,theta1,theta2,cos2;
   int i,j;
   void planet0();
 
-  ymin = 2.0;
-  ymax = -2.0;
+  if (scale<1.0) Depth = 3*((int)(log_2(scale*Height)))+6+1.5/scale;
+
   if (lat>0) {
     k1 = 1.0/sin(lat);
     c = k1*k1;
@@ -1487,16 +1535,13 @@ void conical()
           if (doshade>0) shades[i][j] = 255;
         } else {
           theta1 += longi-0.5*PI; /* theta1 is longitude */
-          theta2 = k1*asin((zz-c)/(zz+c));
-          /* theta2 is latitude */
+          theta2 = k1*asin((zz-c)/(zz+c)); /* theta2 is latitude */
           if (theta2 > 0.5*PI || theta2 < -0.5*PI) {
             col[i][j] = BACK;
             if (doshade>0) shades[i][j] = 255;
           } else {
             cos2 = cos(theta2);
             y = sin(theta2);
-            if (y < ymin) ymin = y;
-            if (y > ymax) ymax = y;
             planet0(cos(theta1)*cos2,y,-sin(theta1)*cos2, i, j);
           }
         }
@@ -1520,16 +1565,13 @@ void conical()
           if (doshade>0) shades[i][j] = 255;
         } else {
           theta1 += longi-0.5*PI; /* theta1 is longitude */
-          theta2 = k1*asin((zz-c)/(zz+c));
-          /* theta2 is latitude */
+          theta2 = k1*asin((zz-c)/(zz+c)); /* theta2 is latitude */
           if (theta2 > 0.5*PI || theta2 < -0.5*PI) {
             col[i][j] = BACK;
             if (doshade>0) shades[i][j] = 255;
           } else {
             cos2 = cos(theta2);
             y = sin(theta2);
-            if (y < ymin) ymin = y;
-            if (y > ymax) ymax = y;
             planet0(cos(theta1)*cos2,y,-sin(theta1)*cos2, i, j);
           }
         }
@@ -2226,13 +2268,12 @@ FILE *outfile;
   fclose(outfile);
 }
 
-double log_2(x)
-double x;
-{ return(log(x)/log(2.0)); }
-
 void print_error(char *filename, char *ext)
 {
-  fprintf(stderr,"Usage: planet [options]\n\n");
-  fprintf(stderr,"See Manual.txt for details\n\n");
+  fprintf(stderr,"Usage: planet [options]\n");
+  fprintf(stderr,"See Manual.pdf for details\n");
+  fprintf(stderr,"Version: 20230926-Riviera71\n");
+  fprintf(stderr,"Homepage: https://topps.diku.dk/torbenm/maps.msp\n");
+  fprintf(stderr,"Modified: https://topps.diku.dk/torbenm/thread.msp?topic=218566649\n\n");	 
   exit(0);
 }
