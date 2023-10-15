@@ -358,7 +358,10 @@ char **av;
                    break;
         case 'x' : file_type =xpm;
                    break;
-        case 'R' : fprintf(stderr, "Version: %s\n", version);
+        case 'R' : fprintf(stdout,"Version: %s\-mod\n", version);
+                   fprintf(stdout,"Homepage: https://topps.diku.dk/torbenm/maps.msp\n");
+                   fprintf(stdout,"Modified: https://topps.diku.dk/torbenm/thread.msp?topic=218566649\n");
+				   exit(0);
                    break;
         case 'C' : sscanf(av[++i],"%255s",colorsname);
                    break;
@@ -2272,8 +2275,5 @@ void print_error(char *filename, char *ext)
 {
   fprintf(stderr,"Usage: planet [options]\n");
   fprintf(stderr,"See Manual.pdf for details\n");
-  fprintf(stderr,"Version: 20230926-Riviera71\n");
-  fprintf(stderr,"Homepage: https://topps.diku.dk/torbenm/maps.msp\n");
-  fprintf(stderr,"Modified: https://topps.diku.dk/torbenm/thread.msp?topic=218566649\n\n");	 
   exit(0);
 }
