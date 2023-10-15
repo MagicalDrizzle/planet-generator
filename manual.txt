@@ -2,7 +2,7 @@
 		Planet
 
 	Planet generating program
-	Copyright 1988-2021 Torben Æ. Mogensen
+	Copyright 1988-2021 Torben Ã†. Mogensen
 	With contributions from Jim Burrows
 
 The program generates planet maps based on recursive spatial
@@ -128,8 +128,8 @@ override earlier ones.  The projection letter can follow immediately
 after "-p" (as in "-pM") or they can be separated by space (as in "-p M").
 
 As an example, to generate a stereographic projection of a planet
-generated from seed 0.3 with magnification 3 centered around 30¡
-north, 35¡ east with gridlines every 10 degrees on latitudes and every
+generated from seed 0.3 with magnification 3 centered around 30Â°
+north, 35Â° east with gridlines every 10 degrees on latitudes and every
 20 degrees on longitudes, outputting the result as a 320x256 bitmap in
 the file p.bmp, use the command
 
@@ -338,7 +338,7 @@ magnification factor. Hence, a map of width 20cm at magnification 2
 has a scale of 1:1x10^8 at equator. For the Mercator projection, the
 scale at latitude L is 1/cos(L) times the equatorial scale. Hence, a
 map of width 20cm and magnification 2 has scale 1:1.416x10^8 at
-latitude 45° and scale 1:2x10^8 at latitude 60°.
+latitude 45Â° and scale 1:2x10^8 at latitude 60Â°.
 
 A number of azimuthal projections are available.  An azimuthal
 projection projects the globe onto a plane that touches the globe at
@@ -390,7 +390,7 @@ can not calculate actual scales.
 The conical projection is a conformal (angle preserving) projection
 from the sphere onto a cone that touches the specified latitude.  The
 cone is cut opposite the specified longitude and laid flat, so it
-appears like a pie section.  For latitudes close to 0 or ±90°, the
+appears like a pie section.  For latitudes close to 0 or 90Â°, the
 conical projection approaches the Mercator and stereographic
 projections (respectively).  If the extremes are specified, these will
 be used instead of the conical projection.  The scale at the center of

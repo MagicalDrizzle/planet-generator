@@ -1,10 +1,10 @@
 ReadMe file for the planet generating program "Planet".
-Copyright 1988-2009 Torben Æ. Mogensen
+Copyright 1988-2009 Torben Ã†. Mogensen
 
 
 Copyright notice:
 
-The program and manual are the copyright of Torben Æ. Mogensen.
+The program and manual are the copyright of Torben Ã†. Mogensen.
 
 The program and its sources are provided free of charge for use,
 modification and redistribution for anyone who might want to do so.
