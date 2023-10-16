@@ -72,8 +72,7 @@ int rtable[65536], gtable[65536], btable[65536];
 /* Supported output file types:
     BMP - Windows Bit MaPs
     PPM - Portable Pix Maps
-    XPM - X-windows Pix Maps
- */
+    XPM - X-windows Pix Maps */
 
 double log_2(x)
 double x;
@@ -208,18 +207,18 @@ unsigned short **shades; /* shade array */
 double shade_angle = 150.0; /* angle of "light" on bumpmap */
 double shade_angle2 = 20.0; /* with daylight shading, these two are longitude/latitude */
 
-// Riviera71 modifications
-// double shade_angle = 60.0;
-// double shade_angle2 = 21.0;
+/* Riviera71 modifications */
+/*
+double shade_angle = 60.0;
+double shade_angle2 = 21.0;
+*/
 
 double cla, sla, clo, slo, rseed;
 
-int temperature = 0; /* if 1, show temperatures based on latitude
-			and altitude*/
+int temperature = 0; /* if 1, show temperatures based on latitude and altitude*/
 double tempMin = 1000.0, tempMax = -1000.0;
 
-int rainfall = 0; /* if 1, calculate rainfall based on latitude
-			and temperature */
+int rainfall = 0; /* if 1, calculate rainfall based on latitude and temperature */
 double rainMin = 1000.0, rainMax = -1000.0;
 
 double rainShadow = 0.0; /* approximate rain shadow */
@@ -667,7 +666,7 @@ char **av;
 
   if (view != 'f') {  
     fprintf(stdout, "Progress:\n");
-    fprintf(stdout, "0----------50---------100\%\n");
+    fprintf(stdout, "0----------50---------100%%\n");
 	}
   switch (view) {
 
@@ -944,7 +943,8 @@ void readcolors(FILE *colfile, char* colorsname)
 void makeoutline(int do_bw)
 {
   int i,j,k,t;
-
+  int contourstep = 0;
+  
   outx = (int*)calloc(Width*Height,sizeof(int));
   outy = (int*)calloc(Width*Height,sizeof(int));
   k=0;
@@ -958,8 +958,6 @@ void makeoutline(int do_bw)
         /* if point is sea and any neighbour is not, add to outline */
         outx[k] = i; outy[k++] = j;
       }
-
-  int contourstep = 0;
 
   if (contourLines > 0) {
     contourstep = (HIGHEST-LAND)/(contourLines+1);
