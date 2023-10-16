@@ -18,11 +18,11 @@ int do_file = 0, tmp = 0;
 ```
 Changes from the original code:
 - Double orthographic projection with `-pO` by Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649
-- Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme by me (uses `-Z` instead of `-z`)
-- Better version information printing (program will now exit after printing) by me
-- A little progress bar showing progress on creating planets by me
+- Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme by me (uses `-Z` instead of `-z`).
+- Better version information printing (program will now exit after printing) by me.
+- A little progress bar showing progress on creating planets by me (mostly adapted from Torben's old debug code).
 
-All my changes are released to the public domain (mostly because I didn't change much of anything).  
+All my changes are released to the public domain, mostly because I didn't change much of anything...  
 ### Original readme file with copyright information
 ```
 ReadMe file for the planet generating program "Planet".
