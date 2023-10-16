@@ -356,7 +356,6 @@ char **av;
                    fprintf(stdout,"Homepage: https://topps.diku.dk/torbenm/maps.msp\n");
                    fprintf(stdout,"Modified: https://topps.diku.dk/torbenm/thread.msp?topic=218566649\n");
 				   exit(0);
-                   break;
         case 'C' : sscanf(av[++i],"%255s",colorsname);
                    break;
         case 'l' : sscanf(av[++i],"%lf",&longi);
