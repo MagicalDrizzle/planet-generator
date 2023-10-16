@@ -422,6 +422,7 @@ char **av;
         case 't' : temperature = 1; break;
         case 'r' : rainfall = 1; break;
         case 'z' : makeBiomes = 1; break;
+		case 'Z' : makeBiomes = 2; break;
         case 'p' : if (strlen(av[i])>2) view = av[i][2];
                    else view = av[++i][0];
                    switch (view) {
@@ -868,7 +869,7 @@ void readcolors(FILE *colfile, char* colorsname)
     btable[i] = btable[cNum];
   }
 
-  if (makeBiomes) {
+  if (makeBiomes == 1) {
   /* make biome colours */
   rtable['T'-64+LAND] = 210;
   gtable['T'-64+LAND] = 210;
@@ -900,6 +901,40 @@ void readcolors(FILE *colfile, char* colorsname)
   rtable['O'-64+LAND] = 110;
   gtable['O'-64+LAND] = 160;
   btable['O'-64+LAND] = 170;
+  rtable['I'-64+LAND] = 255;
+  gtable['I'-64+LAND] = 255;
+  btable['I'-64+LAND] = 255;
+  } else if (makeBiomes == 2) {
+  rtable['T'-64+LAND] = 151;
+  gtable['T'-64+LAND] = 169;
+  btable['T'-64+LAND] = 173;
+  rtable['G'-64+LAND] = 144;
+  gtable['G'-64+LAND] = 126;
+  btable['G'-64+LAND] = 46;
+  rtable['B'-64+LAND] = 99;
+  gtable['B'-64+LAND] = 143;
+  btable['B'-64+LAND] = 82;
+  rtable['D'-64+LAND] = 193;
+  gtable['D'-64+LAND] = 113;
+  btable['D'-64+LAND] = 54;
+  rtable['S'-64+LAND] = 153;
+  gtable['S'-64+LAND] = 165;
+  btable['S'-64+LAND] = 38;
+  rtable['F'-64+LAND] = 64;
+  gtable['F'-64+LAND] = 138;
+  btable['F'-64+LAND] = 161;
+  rtable['R'-64+LAND] = 29;
+  gtable['R'-64+LAND] = 84;
+  btable['R'-64+LAND] = 109;
+  rtable['W'-64+LAND] = 185;
+  gtable['W'-64+LAND] = 150;
+  btable['W'-64+LAND] = 160;
+  rtable['E'-64+LAND] = 130;
+  gtable['E'-64+LAND] = 190;
+  btable['E'-64+LAND] = 25;
+  rtable['O'-64+LAND] = 26;
+  gtable['O'-64+LAND] = 82;
+  btable['O'-64+LAND] = 44;
   rtable['I'-64+LAND] = 255;
   gtable['I'-64+LAND] = 255;
   btable['I'-64+LAND] = 255;
