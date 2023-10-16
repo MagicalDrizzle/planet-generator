@@ -1,15 +1,14 @@
 # planet-generator
-HTTPS mirror of Torben Mogensen's planet generator along with modifications others made (currently, addition of the double orthographic hemispheres projection by `Riviera71`).  
+HTTPS mirror of Torben Mogensen's planet generator along with modifications me and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
-- `planet.c`: Torben's original code  
-- `planet_mod.c`: The modified code described at the start  
-- `planet_mod_clinatesim.c`: The same as `planet_mod.c`, but using the biomes color scheme of: https://space.geometrian.com/calcs/climate-sim.php  
+- `planet.c`: Torben's original code. Current version: September 2023.  
+- `planet_mod.c`: The modified code.
 
 `clang` and `msvc` has dropped support for old-style declarations. As of now only `gcc` is able to compile the program.  
 More info: https://topps.diku.dk/torbenm/thread.msp?topic=692986545  
-How I usually compile the program: `gcc -O2 planet.c -o planet.exe && strip planet.exe`  
+How I usually compile the program: `gcc -O2 -lm planet.c -o planet.exe && strip planet.exe`  
 
-Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is Olsson.col.  
+Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is `Olsson.col`.  
 You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone).  
 More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
 ```c
@@ -17,7 +16,11 @@ char filename[256] = "planet-map";
 char colorsname[256] = "Olsson.col"; /* << change that */
 int do_file = 0, tmp = 0;
 ```
-Also most of the smartness and wonderfulness came from Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649, I'm just the one doing random things...  
+Changes from the original code:
+- Double orthographic projection with `-pO` by Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649
+- Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme by me (uses `-Z` instead of `-z`)
+- Better version information printing (program will now exit after printing) by me
+- A little progress bar showing progress on creating planets by me
 ### Original readme file with copyright information
 ```
 ReadMe file for the planet generating program "Planet".
