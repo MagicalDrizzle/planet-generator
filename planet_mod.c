@@ -260,14 +260,6 @@ int max(x,y)
 int x,y;
 { return(x<y ? y : x); }
 
-double fmin(x,y)
-double x,y;
-{ return(x<y ? x : y); }
-
-double fmax(x,y)
-double x,y;
-{ return(x<y ? y : x); }
-
 int main(ac,av)
 int ac;
 char **av;
@@ -437,7 +429,7 @@ char **av;
                      case 'S' :
                      case 'i' :
                      case 'f' : break;
-             case 'h' : file_type = heightfield; break;
+                     case 'h' : file_type = heightfield; break;
                      default: fprintf(stderr,"Unknown projection: %s\n",av[i]);
                               print_error(do_file ? filename : "standard output",
                                          !do_file ? "" : file_ext(file_type));
@@ -790,18 +782,22 @@ char **av;
   return(0);
 }
 
-void readcolors(FILE *colfile, char* colorsname)
+void readcolors(FILE *colfile, const char* colorsname)
 {
   int crow, cNum = 0, oldcNum, i;
 
   if (NULL == (colfile = fopen(colorsname, "r")))
     {
-      fprintf(stderr,
-              "Cannot open %s\n",
-              colorsname);
+      fprintf(stderr,"Cannot open %s\n",colorsname);
+      if (strcmp(colorsname,"Olsson.col") == 0)
+      {
+        fprintf(stderr,"Warning: planet does not support running as a standalone binary.\n");
+        fprintf(stderr,"It requires at least one color file in its directory to work,\n");
+        fprintf(stderr,"for when you don't explicitly set a color file.\n");
+        fprintf(stderr,"More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439\n");
+      }
       exit(1);
     }
-
 
   /* Format of colour file is a sequence of lines       */
   /* each consisting of four integers:                  */
@@ -1017,7 +1013,6 @@ void makeoutline(int do_bw)
 void readmap()  /* reads in a map for matching */
 {
   int i,j;
-  double y;
   char c;
   int Width, Height;
 
@@ -1161,8 +1156,8 @@ void squarep()
 
 void mollweide()
 {
-  double y,y1,zz,scale1,cos2,theta1,theta2;
-  int i,j,i1=1,k;
+  double y,y1,zz,scale1,cos2,theta1;
+  int i,j;
   void planet0();
 
   for (j = 0; j < Height; j++) {
@@ -1205,7 +1200,7 @@ void mollweide()
 void sinusoid()
 {
   double y,theta1,theta2,cos2,l1,i1,scale1;
-  int k,i,j,l,c;
+  int k,i,j,l;
   void planet0();
 
   k = (int)(lat*Width*scale/PI+0.5);
@@ -1242,9 +1237,8 @@ void sinusoid()
 
 void stereo()
 {
-  double x,y,z,zz,x1,y1,z1,theta1,theta2;
+  double x,y,z,zz,x1,y1,z1;
   int i,j;
-  double scale1;
   void planet0();
 
   for (j = 0; j < Height; j++) {
@@ -1270,7 +1264,7 @@ void stereo()
 
 void orthographic()
 {
-  double x,y,z,x1,y1,z1,theta1,theta2,zz;
+  double x,y,z,x1,y1,z1;
   int i,j;
   void planet0();
 
@@ -1296,7 +1290,7 @@ void orthographic()
 
 void orthographic2()
 {
-  double x,y,z,x1,y1,z1,ymin,ymax,theta1,theta2,zz;
+  double x,y,z,x1,y1,z1,ymin,ymax;
   int i,j;
   void planet0();
   double lat1, longi1;
@@ -1346,10 +1340,10 @@ void orthographic2()
 
 void icosahedral() /* modified version of gnomonic */
 {
-  double x,y,z,x1,y1,z1,zz,theta1,theta2;
+  double x,y,z,x1,y1,z1,zz;
   int i,j;
   void planet0();
-  double lat1, longi1, sla, cla, slo, clo, x0, y0, sq3_4, sq3;
+  double lat1, longi1, sla, cla, slo, clo, x0, y0, sq3;
   double L1, L2, S;
 
   sq3 = sqrt(3.0);
@@ -1486,7 +1480,7 @@ void icosahedral() /* modified version of gnomonic */
 
 void gnomonic()
 {
-  double x,y,z,x1,y1,z1,zz,theta1,theta2;
+  double x,y,z,x1,y1,z1,zz;
   int i,j;
   void planet0();
 
@@ -1511,7 +1505,7 @@ void gnomonic()
 
 void azimuth()
 {
-  double x,y,z,x1,y1,z1,zz,theta1,theta2;
+  double x,y,z,x1,y1,z1,zz;
   int i,j;
   void planet0();
 
@@ -1541,7 +1535,7 @@ void azimuth()
 
 void conical()
 {
-  double k1,c,y2,x,y,zz,x1,y1,z1,theta1,theta2,cos2;
+  double k1,c,y2,x,y,zz,theta1,theta2,cos2;
   int i,j;
   void planet0();
 
@@ -1790,7 +1784,6 @@ int level;                  /* levels to go */
       if (l1==0.0) l1 = 1.0;
       tmp = sqrt(1.0-y*y);
       if (tmp<0.0001) tmp = 0.0001;
-      x2 = x*x1+y*y1+z*z1;
       z2 = -z/tmp*x1+x/tmp*z1;
       if (lab > 0.04)
 	e.shadow = (a.shadow + b.shadow- cos(PI*shade_angle/180.0)*z2/l1)/3.0;
@@ -1828,7 +1821,6 @@ int level;                  /* levels to go */
       if (l1==0.0) l1 = 1.0;
       tmp = sqrt(1.0-y*y);
       if (tmp<0.0001) tmp = 0.0001;
-      x2 = x*x1+y*y1+z*z1;
       y2 = -x*y/tmp*x1+tmp*y1-z*y/tmp*z1;
       z2 = -z/tmp*x1+x/tmp*z1;
       shade =
@@ -1869,8 +1861,6 @@ int level;                  /* levels to go */
 double planet1(x,y,z)
 double x,y,z;
 {
-  vertex a,b,c,d;
-
   double abx,aby,abz, acx,acy,acz, adx,ady,adz, apx,apy,apz;
   double bax,bay,baz, bcx,bcy,bcz, bdx,bdy,bdz, bpx,bpy,bpz;
   
@@ -2257,7 +2247,6 @@ FILE *outfile;
 {
   int x,y,nbytes;
 
-  x = nocols - 1;
   nbytes = 1;
 
   fprintf(outfile,"/* XPM */\n");
@@ -2297,9 +2286,9 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void print_error(char *filename, char *ext)
+void print_error()
 {
-  fprintf(stderr,"Usage: planet [options]\n");
+  fprintf(stderr,"Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
   fprintf(stderr,"See Manual.pdf for details\n");
   exit(0);
 }
