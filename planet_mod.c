@@ -41,6 +41,12 @@ char version[] = "September 2023";
 #include <unix.h>
 #endif
 
+#ifdef WIN32
+#include <io.h>
+#elif _WIN32
+#include <io.h>
+#endif
+
 #define O_BINARY 0x8000
 
 #include <stdio.h>
@@ -487,9 +493,9 @@ char **av;
   else {
     outfile = stdout;
 #ifdef WIN32
-    setmode(fileno(outfile), O_BINARY);
+    _setmode(fileno(outfile), O_BINARY);
 #elif _WIN32
-    setmode(fileno(outfile), O_BINARY);
+    _setmode(fileno(outfile), O_BINARY);
 #endif
   }
 

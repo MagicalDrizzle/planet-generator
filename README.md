@@ -1,7 +1,7 @@
 # planet-generator
 HTTPS mirror of Torben Mogensen's planet generator along with modifications me and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
-Download: https://github.com/MagicalDrizzle/planet-generator/zipball/master/    
+Download: https://github.com/MagicalDrizzle/planet-generator/zipball/master/  
 - `planet.c`: Torben's original code. Current version: September 2023.  
 - `planet_mod.c`: The modified code.
 
