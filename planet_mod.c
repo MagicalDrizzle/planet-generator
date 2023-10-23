@@ -80,16 +80,16 @@ int rtable[65536], gtable[65536], btable[65536];
     PPM - Portable Pix Maps
     XPM - X-windows Pix Maps */
 
-double log_2(x)
-double x;
-{ return(log(x)/log(2.0)); }
+double log_2(double x) { 
+	return(log(x)/log(2.0)); 
+}
 
 typedef enum ftype
     {
         bmp,
         ppm,
         xpm,
-    heightfield
+	    heightfield
     }
     ftype;
 
@@ -258,26 +258,23 @@ double cR1, sR1, cR2, sR2;
 
 char cmdLine[1000]; /* command line info */
 
-int min(x,y)
-int x,y;
-{ return(x<y ? x : y); }
+int min(int x, int y) {
+	return(x<y ? x : y); 
+}
 
-int max(x,y)
-int x,y;
-{ return(x<y ? y : x); }
+int max(int x, int y) {
+	return(x<y ? y : x);
+}
 
-int main(ac,av)
-int ac;
-char **av;
-{
-  void printppm(), printppmBW(), printbmp(), printbmpBW(),
-       printxpm(), printxpmBW(), printheights(), print_error();
+int main(int ac, char **av) {
+  void printppm(FILE *), printppmBW(FILE *), printbmp(FILE *), printbmpBW(FILE *),
+       printxpm(FILE *), printxpmBW(FILE *), printheights(FILE *), print_error(char *, char *);
   void mercator(), peter(), squarep(), mollweide(), sinusoid(), stereo(),
     orthographic(), orthographic2(), gnomonic(), icosahedral(), azimuth(), conical();
   int i;
-  double rand2(),  planet1();
-  void readcolors();
-  void readmap(), makeoutline(), smoothshades();
+  double rand2(double, double),  planet1(double, double, double);
+  void readcolors(FILE *, const char *);
+  void readmap(), makeoutline(int), smoothshades();
   FILE *outfile, *colfile = NULL;
   char filename[256] = "planet-map";
   char colorsname[256] = "Olsson.col";
@@ -791,7 +788,6 @@ char **av;
 void readcolors(FILE *colfile, const char* colorsname)
 {
   int crow, cNum = 0, oldcNum, i;
-
   if (NULL == (colfile = fopen(colorsname, "r")))
     {
       fprintf(stderr,"Cannot open %s\n",colorsname);
@@ -1245,7 +1241,7 @@ void stereo()
 {
   double x,y,z,zz,x1,y1,z1;
   int i,j;
-  void planet0();
+  void planet0(double x1, double y1, double z1, int i, int j);
 
   for (j = 0; j < Height; j++) {
     if ((j % (Height/25)) == 0)
@@ -1609,19 +1605,19 @@ void conical()
   }
 }
 
-double rand2(p,q) /* random number generator taking two seeds */
-double p,q;       /* rand2(p,q) = rand2(q,p) is important     */
+double rand2(double p, double q) 
+/* random number generator taking two seeds */
+/* rand2(p,q) = rand2(q,p) is important     */
 {
   double r;
   r = (p+3.14159265)*(q+3.14159265);
   return(2.*(r-(int)r)-1.);
 }
 
-void planet0(x,y,z, i, j)
-double x,y,z;
-int i, j;
+void planet0(double x, double y, double z, int i, int j)
 {
-  double alt, planet1(), y2, sun, temp, rain;
+  double alt, y2, sun, temp, rain;
+  double planet1(double x, double y, double z);
   int colour;
 
   alt = planet1(x,y,z);
@@ -1708,10 +1704,10 @@ int i, j;
 
 vertex ssa, ssb, ssc, ssd;
 
-double planet(a,b,c,d, x,y,z, level)
-vertex a,b,c,d;             /* tetrahedron vertices */
-double x,y,z;               /* goal point */
-int level;                  /* levels to go */
+double planet(vertex a, vertex b, vertex c, vertex d, double x, double y, double z, int level)
+/* vertex a,b,c,d;    tetrahedron vertices */
+/* double x,y,z;      goal point */
+/* int level;         levels to go */
 {
   vertex e;
   double lab, lac, lad, lbc, lbd, lcd, maxlength;
@@ -1864,8 +1860,7 @@ int level;                  /* levels to go */
   }
 }
 
-double planet1(x,y,z)
-double x,y,z;
+double planet1(double x, double y, double z)
 {
   double abx,aby,abz, acx,acy,acz, adx,ady,adz, apx,apy,apz;
   double bax,bay,baz, bcx,bcy,bcz, bdx,bdy,bdz, bpx,bpy,bpz;
@@ -1918,8 +1913,7 @@ double x,y,z;
 }
 
 
-void printppm(outfile) /* prints picture in PPM (portable pixel map) format */
-FILE *outfile;
+void printppm(FILE *outfile) /* prints picture in PPM (portable pixel map) format */
 {
   int i,j,c,s;
 
@@ -1954,8 +1948,7 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void printppmBW(outfile) /* prints picture in b/w PPM format */
-FILE *outfile;
+void printppmBW(FILE *outfile) /* prints picture in b/w PPM format */
 {
   int i,j,c;
 
@@ -1976,8 +1969,7 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void printbmp(outfile) /* prints picture in BMP format */
-FILE *outfile;
+void printbmp(FILE *outfile) /* prints picture in BMP format */
 {
   int i,j,c,s0, s, W1;
 
@@ -2086,8 +2078,7 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void printbmpBW(outfile) /* prints picture in b/w BMP format */
-FILE *outfile;
+void printbmpBW(FILE *outfile) /* prints picture in b/w BMP format */
 {
   int i,j,c,s,s0, W1;
 
@@ -2217,8 +2208,7 @@ char *nletters(int n, int c)
   return buffer;
 }
 
-void printxpm(outfile) /* prints picture in XPM (X-windows pixel map) format */
-FILE *outfile;
+void printxpm(FILE *outfile) /* prints picture in XPM (X-windows pixel map) format */
 {
   int x,y,i,nbytes;
 
@@ -2248,8 +2238,7 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void printxpmBW(outfile) /* prints picture in XPM (X-windows pixel map) format */
-FILE *outfile;
+void printxpmBW(FILE *outfile) /* prints picture in XPM (X-windows pixel map) format */
 {
   int x,y,nbytes;
 
@@ -2279,8 +2268,7 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void printheights(outfile) /* prints heightfield */
-FILE *outfile;
+void printheights(FILE *outfile) /* prints heightfield */
 {
   int i,j;
 
@@ -2292,7 +2280,7 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void print_error()
+void print_error(char *filename, char *ext)
 {
   fprintf(stderr,"Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
   fprintf(stderr,"See Manual.pdf for details\n");
