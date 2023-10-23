@@ -5,7 +5,7 @@ Download: https://github.com/MagicalDrizzle/planet-generator/zipball/master/
 - `planet.c`: Torben's original code. Current version: September 2023.  
 - `planet_mod.c`: The modified code.
 
-`clang` and `msvc` has dropped support for old-style declarations. As of now only `gcc` is able to compile the program.  
+`msvc` seems to have dropped support for old-style declarations. As of now only `gcc` and `clang` is able to compile the program.  
 More info: https://topps.diku.dk/torbenm/thread.msp?topic=692986545  
 How I usually compile the program: `gcc -O2 -lm planet.c -o planet.exe && strip planet.exe`  
 
