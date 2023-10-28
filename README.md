@@ -1,13 +1,12 @@
-# planet-generator
-HTTPS mirror of Torben Mogensen's planet generator along with modifications me and others made.  
+## planet-generator
+HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
 Download: https://github.com/MagicalDrizzle/planet-generator/zipball/master/  
 - `planet.c`: Torben's original code. Current version: September 2023.  
 - `planet_mod.c`: The modified code.
 
-`msvc` seems to have dropped support for old-style declarations. As of now only `gcc` and `clang` is able to compile the program.  
-More info: https://topps.diku.dk/torbenm/thread.msp?topic=692986545  
-How I usually compile the program: `gcc -O2 -lm planet.c -o planet.exe && strip planet.exe`  
+`msvc` seems to have dropped support for old-style declarations. As of now only `gcc` and `clang` is able to compile the program.   
+How I usually compile the program: `gcc -O2 -Wall -Wextra -lm planet.c -o planet.exe && strip planet.exe`  
 
 Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is `Olsson.col`.  
 You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone).  
@@ -86,10 +85,21 @@ I thank Jim Burrows for contributions to the code.
 ```
 ### Additional copyright information on Torben's website
 ```
-Both the program itself and maps created by the program are free for use, modification and reproduction, both privately and for commercial purposes, as long as this does not limit what other people may do with the program and images they produce with the program.  
-For example, you can not copyright an image produced by the program unless you have substantially modified it afterwards, because other people might use the same parameters as you used to produce the same image.  
-If you add code to the program that you do not wish to share, you can claim copyright for the code you write yourself, but that does not extend to the program as a whole.  
-If you are in doubt about any particular use, you are welcome to contact me using the email address at the bottom if this page.  
+Both the program itself and maps created by the program are free for use,
+modification and reproduction, both privately and for commercial purposes,
+as long as this does not limit what other people may do with the program
+and images they produce with the program.
+
+For example, you can not copyright an image produced by the program unless
+you have substantially modified it afterwards, because other people might
+use the same parameters as you used to produce the same image.
+
+If you add code to the program that you do not wish to share, you can claim
+copyright for the code you write yourself, but that does not extend to the
+program as a whole.
+
+If you are in doubt about any particular use, you are welcome to contact me
+using the email address at the bottom if this page.  
 
 Torben Mogensen  
 DIKU, University of Copenhagen, Universitetsparken 5, DK-2100 København Ø  
