@@ -1,11 +1,13 @@
 ## planet-generator
+Download link if you want to quickly run the program: https://github.com/MagicalDrizzle/planet-generator/zipball/master/  
+
 HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
-Download: https://github.com/MagicalDrizzle/planet-generator/zipball/master/  
 - `planet.c`: Torben's original code. Current version: September 2023.  
 - `planet_mod.c`: The modified code.
 
-`msvc` seems to have dropped support for old-style declarations. As of now only `gcc` and `clang` is able to compile the program.   
+Note: MSVC is unable to compile the original code.  
+I have managed to modify the code in `planet_mod.c` to be compile-able by MSVC.   
 How I usually compile the program: `gcc -O2 -Wall -Wextra -lm planet.c -o planet.exe && strip planet.exe`  
 
 Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is `Olsson.col`.  
@@ -18,9 +20,11 @@ int do_file = 0, tmp = 0;
 ```
 Changes from the original code:
 - Double orthographic projection with `-pO` by Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649
-- Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme by me (uses `-Z` instead of `-z`).
-- Better version information printing (program will now exit after printing) by me.
-- A little progress bar showing progress on creating planets by me (mostly adapted from Torben's old debug code).
+- Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme (uses `-Z` instead of `-z`).
+- Better version information printing (program will now exit after printing).
+- A little progress bar showing progress on creating planets (mostly adapted from Torben's old debug code).
+- A bunch of rewriting declarations and definitions to be more compliant with modern C.  
+- Able to be compiled by MSVC.  
 
 All my changes are released to the public domain, mostly because I didn't change much of anything...  
 ### Original readme file with copyright information
