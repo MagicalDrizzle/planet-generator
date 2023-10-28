@@ -258,6 +258,16 @@ double cR1, sR1, cR2, sR2;
 
 char cmdLine[1000]; /* command line info */
 
+/* Windows is kinda shit: https://stackoverflow.com/a/4234022 */
+/* Defining min and max in system headers is a bad idea. */
+#ifdef WIN32
+#undef min
+#undef max
+#elif _WIN32
+#undef min
+#undef max
+#endif
+
 int min(int x, int y) {
 	return(x<y ? x : y); 
 }
