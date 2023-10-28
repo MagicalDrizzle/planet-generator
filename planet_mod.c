@@ -1070,7 +1070,7 @@ void mercator()
 {
   double y,scale1,cos2,theta1;
   int i,j,k;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   y = sin(lat);
   y = (1.0+y)/(1.0-y);
@@ -1096,7 +1096,7 @@ void peter()
 {
   double y,cos2,theta1,scale1;
   int k,i,j,water,land;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   y = 2.0*sin(lat);
   k = (int)(0.5*y*Width*scale/PI+0.5);
@@ -1131,7 +1131,7 @@ void squarep()
 {
   double y,scale1,theta1,cos2;
   int k,i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   k = (int)(0.5*lat*Width*scale/PI+0.5);
   for (j = 0; j < Height; j++) {
@@ -1160,7 +1160,7 @@ void mollweide()
 {
   double y,y1,zz,scale1,cos2,theta1;
   int i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   for (j = 0; j < Height; j++) {
     if ((j % (Height/25)) == 0)
@@ -1203,7 +1203,7 @@ void sinusoid()
 {
   double y,theta1,theta2,cos2,l1,i1,scale1;
   int k,i,j,l;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   k = (int)(lat*Width*scale/PI+0.5);
   for (j = 0; j < Height; j++) {
@@ -1228,8 +1228,7 @@ void sinusoid()
             col[i][j] = BACK;
             if (doshade>0) shades[i][j] = 255;
           } else {
-            planet0(cos(theta1+theta2)*cos2,sin(y),-sin(theta1+theta2)*cos2,
-                    i,j);
+            planet0(cos(theta1+theta2)*cos2,sin(y),-sin(theta1+theta2)*cos2,i,j);
           }
         }
       }
@@ -1268,7 +1267,7 @@ void orthographic()
 {
   double x,y,z,x1,y1,z1;
   int i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   for (j = 0; j < Height; j++) {
     if ((j % (Height/25)) == 0)
@@ -1294,7 +1293,7 @@ void orthographic2()
 {
   double x,y,z,x1,y1,z1,ymin,ymax;
   int i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
   double lat1, longi1;
 
   ymin = 2.0;
@@ -1344,7 +1343,7 @@ void icosahedral() /* modified version of gnomonic */
 {
   double x,y,z,x1,y1,z1,zz;
   int i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
   double lat1, longi1, sla, cla, slo, clo, x0, y0, sq3;
   double L1, L2, S;
 
@@ -1484,7 +1483,7 @@ void gnomonic()
 {
   double x,y,z,x1,y1,z1,zz;
   int i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   if (scale<1.0) Depth = 3*((int)(log_2(scale*Height)))+6+1.5/scale;
   for (j = 0; j < Height; j++) {
@@ -1509,7 +1508,7 @@ void azimuth()
 {
   double x,y,z,x1,y1,z1,zz;
   int i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   for (j = 0; j < Height; j++) {
     if ((j % (Height/25)) == 0)
@@ -1539,7 +1538,7 @@ void conical()
 {
   double k1,c,y2,x,y,zz,theta1,theta2,cos2;
   int i,j;
-  void planet0();
+  void planet0(double, double, double, int, int);
 
   if (scale<1.0) Depth = 3*((int)(log_2(scale*Height)))+6+1.5/scale;
 
@@ -2280,7 +2279,7 @@ void printheights(FILE *outfile) /* prints heightfield */
   fclose(outfile);
 }
 
-void print_error(char *filename, char *ext)
+void print_error(char *filename, char *file_ext)
 {
   fprintf(stderr,"Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
   fprintf(stderr,"See Manual.pdf for details\n");
