@@ -279,12 +279,12 @@ int max(int x, int y) {
 int main(int ac, char **av) {
   void printppm(FILE *), printppmBW(FILE *), printbmp(FILE *), printbmpBW(FILE *),
        printxpm(FILE *), printxpmBW(FILE *), printheights(FILE *), print_error(char *, char *);
-  void mercator(), peter(), squarep(), mollweide(), sinusoid(), stereo(),
-    orthographic(), orthographic2(), gnomonic(), icosahedral(), azimuth(), conical();
+  void mercator(void), peter(void), squarep(void), mollweide(void), sinusoid(void), stereo(void),
+    orthographic(void), orthographic2(void), gnomonic(void), icosahedral(void), azimuth(void), conical(void);
   int i;
   double rand2(double, double),  planet1(double, double, double);
   void readcolors(FILE *, const char *);
-  void readmap(), makeoutline(int), smoothshades();
+  void readmap(void), makeoutline(int), smoothshades(void);
   FILE *outfile, *colfile = NULL;
   char filename[256] = "planet-map";
   char colorsname[256] = "Olsson.col";
@@ -1022,7 +1022,7 @@ void makeoutline(int do_bw)
   }
 }
 
-void readmap()  /* reads in a map for matching */
+void readmap(void)  /* reads in a map for matching */
 {
   int i,j;
   char c;
@@ -1066,7 +1066,7 @@ void readmap()  /* reads in a map for matching */
 }
 
 
-void smoothshades()
+void smoothshades(void)
 {
   int i,j;
 
@@ -1076,7 +1076,7 @@ void smoothshades()
                       +2*shades[i+1][j]+shades[i+1][j+1]+4)/9;
 }
 
-void mercator()
+void mercator(void)
 {
   double y,scale1,cos2,theta1;
   int i,j,k;
@@ -1102,7 +1102,7 @@ void mercator()
   }
 }
 
-void peter()
+void peter(void)
 {
   double y,cos2,theta1,scale1;
   int k,i,j,water,land;
@@ -1137,7 +1137,7 @@ void peter()
   fprintf(stdout,"water percentage: %d%%",100*water/(water+land));
 }
 
-void squarep()
+void squarep(void)
 {
   double y,scale1,theta1,cos2;
   int k,i,j;
@@ -1166,7 +1166,7 @@ void squarep()
   }
 }
 
-void mollweide()
+void mollweide(void)
 {
   double y,y1,zz,scale1,cos2,theta1;
   int i,j;
@@ -1209,7 +1209,7 @@ void mollweide()
   }
 }
 
-void sinusoid()
+void sinusoid(void)
 {
   double y,theta1,theta2,cos2,l1,i1,scale1;
   int k,i,j,l;
@@ -1246,7 +1246,7 @@ void sinusoid()
   }
 }
 
-void stereo()
+void stereo(void)
 {
   double x,y,z,zz,x1,y1,z1;
   int i,j;
@@ -1273,7 +1273,7 @@ void stereo()
   }
 }
 
-void orthographic()
+void orthographic(void)
 {
   double x,y,z,x1,y1,z1;
   int i,j;
@@ -1299,7 +1299,7 @@ void orthographic()
   }
 }
 
-void orthographic2()
+void orthographic2(void)
 {
   double x,y,z,x1,y1,z1,ymin,ymax;
   int i,j;
@@ -1349,7 +1349,7 @@ void orthographic2()
   }
 }
 
-void icosahedral() /* modified version of gnomonic */
+void icosahedral(void) /* modified version of gnomonic */
 {
   double x,y,z,x1,y1,z1,zz;
   int i,j;
@@ -1489,7 +1489,7 @@ void icosahedral() /* modified version of gnomonic */
   }
 }
 
-void gnomonic()
+void gnomonic(void)
 {
   double x,y,z,x1,y1,z1,zz;
   int i,j;
@@ -1514,7 +1514,7 @@ void gnomonic()
   }
 }
 
-void azimuth()
+void azimuth(void)
 {
   double x,y,z,x1,y1,z1,zz;
   int i,j;
@@ -1544,7 +1544,7 @@ void azimuth()
   }
 }
 
-void conical()
+void conical(void)
 {
   double k1,c,y2,x,y,zz,theta1,theta2,cos2;
   int i,j;

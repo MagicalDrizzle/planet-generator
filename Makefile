@@ -4,7 +4,7 @@
 CC=gcc
 
 # And change this to your favourite C compiler flags:
-CFLAGS = -O2 -g -W -Wall -D_USE_LIBM_MATH_H
+CFLAGS = -O2 -W -Wall -Wpedantic -std=c99
 
 OBJS = planet.o 
 
