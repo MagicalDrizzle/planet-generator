@@ -68,11 +68,8 @@ int LAND = 8;
 int HIGHEST = 9;
 
 int nonLinear = 0;
-
 char view;
-
 int nocols = 65536;
-
 int rtable[65536], gtable[65536], btable[65536];
 
 /* Supported output file types:
@@ -80,18 +77,18 @@ int rtable[65536], gtable[65536], btable[65536];
     PPM - Portable Pix Maps
     XPM - X-windows Pix Maps */
 
-double log_2(double x) { 
+double log_2(double x) 
+{ 
 	return(log(x)/log(2.0)); 
 }
 
 typedef enum ftype
-    {
+{
         bmp,
         ppm,
         xpm,
 	    heightfield
-    }
-    ftype;
+} ftype;
 
 ftype file_type = bmp;
 
@@ -174,7 +171,6 @@ char biomes[45][45] = {
 		       "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIOOOOOOO",
 		       "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIOOOOOOO"
 };
-      
   
 #define PI 3.14159265358979323846
 #define DEG2RAD 0.01745329251994329576923 /* pi/180 */
@@ -797,7 +793,7 @@ int main(int ac, char **av) {
 
 void readcolors(FILE *colfile, const char* colorsname)
 {
-  int crow, cNum = 0, oldcNum, i;
+  int cNum = 0, oldcNum, i;
   if (NULL == (colfile = fopen(colorsname, "r")))
     {
       fprintf(stderr,"Cannot open %s\n",colorsname);
@@ -829,7 +825,7 @@ void readcolors(FILE *colfile, const char* colorsname)
   /* With 65536 colours, (max+6)/2 = 32770              */
   /* Colours between specified are interpolated         */
 
-  for (crow = 0; !feof(colfile); crow++)
+  while (!feof(colfile))
     {
       int       rValue, 
                 gValue, 
@@ -1250,7 +1246,7 @@ void stereo(void)
 {
   double x,y,z,zz,x1,y1,z1;
   int i,j;
-  void planet0(double x1, double y1, double z1, int i, int j);
+  void planet0(double, double, double, int, int);
 
   for (j = 0; j < Height; j++) {
     if ((j % (Height/25)) == 0)
@@ -1354,7 +1350,7 @@ void icosahedral(void) /* modified version of gnomonic */
   double x,y,z,x1,y1,z1,zz;
   int i,j;
   void planet0(double, double, double, int, int);
-  double lat1, longi1, sla, cla, slo, clo, x0, y0, sq3;
+  double lat1, longi1, x0, y0, sq3;
   double L1, L2, S;
 
   sq3 = sqrt(3.0);
