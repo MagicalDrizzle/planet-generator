@@ -437,7 +437,6 @@ int main(int ac, char **av) {
                      case 'M' :
                      case 'S' :
                      case 'i' :
-                     case 'f' : break;
                      case 'h' : file_type = heightfield; break;
                      default: fprintf(stderr,"Unknown projection: %s\n",av[i]);
                               print_error(do_file ? filename : "standard output",
@@ -664,10 +663,9 @@ int main(int ac, char **av) {
   tetra[2].shadow = 0.0;
   tetra[3].shadow = 0.0;
 
-  if (view != 'f') {  
-    fprintf(stdout, "Progress:\n");
-    fprintf(stdout, "0----------50---------100%%\n");
-	}
+  fprintf(stdout, "Progress:\n");
+  fprintf(stdout, "0----------50---------100%%\n");
+
   switch (view) {
 
     case 'm': /* Mercator projection */
