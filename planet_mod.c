@@ -436,7 +436,7 @@ int main(int ac, char **av) {
                      case 'c' :
                      case 'M' :
                      case 'S' :
-                     case 'i' :
+                     case 'i' : break;
                      case 'h' : file_type = heightfield; break;
                      default: fprintf(stderr,"Unknown projection: %s\n",av[i]);
                               print_error(do_file ? filename : "standard output",
