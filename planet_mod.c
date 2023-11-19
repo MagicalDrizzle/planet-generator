@@ -274,7 +274,7 @@ int max(int x, int y) {
 
 int main(int ac, char **av) {
   void printppm(FILE *), printppmBW(FILE *), printbmp(FILE *), printbmpBW(FILE *),
-       printxpm(FILE *), printxpmBW(FILE *), printheights(FILE *), print_error(char *, char *);
+       printxpm(FILE *), printxpmBW(FILE *), printheights(FILE *), print_error(void);
   void mercator(void), peter(void), squarep(void), mollweide(void), sinusoid(void), stereo(void),
     orthographic(void), orthographic2(void), gnomonic(void), icosahedral(void), azimuth(void), conical(void);
   int i;
@@ -439,19 +439,16 @@ int main(int ac, char **av) {
                      case 'i' : break;
                      case 'h' : file_type = heightfield; break;
                      default: fprintf(stderr,"Unknown projection: %s\n",av[i]);
-                              print_error(do_file ? filename : "standard output",
-                                         !do_file ? "" : file_ext(file_type));
+                              print_error();
                    }
                    break;
         default: fprintf(stderr,"Unknown option: %s\n",av[i]);
-                 print_error(do_file ? filename : "standard output",
-                            !do_file ? "" : file_ext(file_type));
+                 print_error();
       }
     }
     else {
       fprintf(stderr,"Unknown option: %s\n\n",av[i]);
-      print_error(do_file ? filename : "standard output",
-                 !do_file ? "" : file_ext(file_type));
+      print_error();
     }
   }
 
@@ -2283,7 +2280,7 @@ void printheights(FILE *outfile) /* prints heightfield */
   fclose(outfile);
 }
 
-void print_error(char *filename, char *file_ext)
+void print_error(void)
 {
   fprintf(stderr,"Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
   fprintf(stderr,"See Manual.pdf for details\n");
