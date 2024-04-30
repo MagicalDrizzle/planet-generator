@@ -4,31 +4,31 @@
 CC=gcc
 
 # And change this to your favourite C compiler flags:
-CFLAGS = -O2 -W -Wall -Wpedantic -std=c99
-
-OBJS = planet.o 
-
+CFLAGS = -O2 -s -w -ansi
+# Original code is very old - have to disable warnings else it will vomit walls in your face
+# I have attempted to "modernize" the code in my modified version.
+CFLAGS_MOD = -O2 -s -Wall -Wextra -pedantic -ansi
 LIBS = -lm
-
-.c.o:
-	$(CC) -c $(CFLAGS) $*.c
 
 all:	planet
 
-planet: $(OBJS)
-	$(CC) $(CFLAGS) -o planet $(OBJS) $(LIBS)
-	@echo "planet made"
+planet:
+	$(CC) $(CFLAGS) planet.c -o planet $(LIBS)
+	$(CC) $(CFLAGS_MOD) planet_mod.c -o planet_mod $(LIBS)	
+	@echo "planet made"
 
 clean:
-	rm -f $(OBJS) planet
+	rm -f planet planet_mod planet.exe planet_mod.exe
 
-SHARFILES = Manual.txt Makefile ReadMe \
-            planet.c \
-            default.col defaultB.col burrows.col burrowsB.col mars.col\
-            wood.col white.col
+SHARFILES = Manual.pdf Makefile readme.txt \
+            planet.c planet_mod.c \
+            Bathymetric.col Blackbody.col Lefebvre.col Lefebvre2.col grayscale.col \
+            Olsson.col Olsson2.col OlssonLight.col default.col defaultB.col \
+            burrows.col burrowsB.col mars.col light.col lava.col white.col wood.col yellow.col \
+            Colors.rgb Gray.rgb Jons.rgb Mars.rgb White.rgb Yellow.rgb earth.map
 
-zip:	$(SHARFILES)
-	zip planet.zip $(SHARFILES)
+share:	$(SHARFILES)
+	tar c -f planet.tar $(SHARFILES)
 
-rmarc:
-	rm -f planet.zip
+distclean:
+	rm -f planet.tar

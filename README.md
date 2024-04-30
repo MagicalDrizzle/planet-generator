@@ -23,6 +23,7 @@ Changes from the original code:
 - Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme (uses `-Z` instead of `-z`).
 - Better version information printing (program will now exit after printing).
 - A little progress bar showing progress on creating planets (mostly adapted from Torben's old debug code).
+- Basic help information, accessible with `planet -1`.
 - A bunch of rewriting declarations and definitions to be more compliant with modern C.  
 - Able to be compiled by MSVC.  
 
