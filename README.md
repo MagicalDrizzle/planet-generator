@@ -1,5 +1,5 @@
 ## planet-generator
-Download link if you want to quickly run the program: https://github.com/MagicalDrizzle/planet-generator/zipball/master/  
+Download link if you want to quickly run the program: https://github.com/MagicalDrizzle/planet-generator/archive/refs/heads/main.zip
 
 HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
