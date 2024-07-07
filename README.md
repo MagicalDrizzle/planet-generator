@@ -26,8 +26,9 @@ Changes from the original code:
 - Basic help information, accessible with `planet -1`.
 - A bunch of rewriting declarations and definitions to be more compliant with modern C.  
 - Able to be compiled by MSVC.  
+- Enabling spaces in output file names and colors file names by switching `%s` to `%[^\n]`: https://topps.diku.dk/torbenm/thread.msp?topic=512274944  
 
-All my changes are released to the public domain, mostly because I didn't change much of anything...  
+All my changes are released under the same license as Torben's.
 ### Original readme file with copyright information
 ```
 ReadMe file for the planet generating program "Planet".
