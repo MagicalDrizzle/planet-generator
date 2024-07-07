@@ -345,7 +345,7 @@ int main(int ac, char **av) {
 				if (scale < 0.1) scale = 0.1;
 				break;
 			case 'o':
-				sscanf(av[++i], "%255s", filename);
+				sscanf(av[++i], "%255[^\n]", filename);
 				do_file = 1;
 				break;
 			case 'x':
@@ -358,7 +358,7 @@ int main(int ac, char **av) {
 				fprintf(stdout, "Modified: https://github.com/MagicalDrizzle/planet-generator\n");
 				exit(0);
 			case 'C':
-				sscanf(av[++i], "%255s", colorsname);
+				sscanf(av[++i], "%255[^\n]", colorsname);
 				break;
 			case 'l':
 				sscanf(av[++i], "%lf", &longi);
