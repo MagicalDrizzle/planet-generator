@@ -2,7 +2,7 @@
 /* planet generating program */
 /* Copyright 1988--present Torben AE. Mogensen */
 
-char version[] = "September 2023";
+char version[] = "July 2024-mod";
 
 /* Dual hemispheres orthographic projection from Riviera71 */
 /* https://topps.diku.dk/torbenm/thread.msp?topic=218566649 */
@@ -32,6 +32,12 @@ char version[] = "September 2023";
 
 /* The primitive user interface is primarily a result of portability concerns */
 
+#include <stdio.h>
+#include <errno.h>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+
 #ifdef THINK_C
 #define macintosh 1
 #endif
@@ -43,18 +49,15 @@ char version[] = "September 2023";
 
 #ifdef WIN32
 #include <io.h>
+#undef min
+#undef max
+#define O_BINARY 0x8000
 #elif _WIN32
 #include <io.h>
-#endif
-
+#undef min
+#undef max
 #define O_BINARY 0x8000
-
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <string.h>
+#endif
 
 int BLACK = 0;
 int WHITE = 1;
@@ -73,9 +76,9 @@ int nocols = 65536;
 int rtable[65536], gtable[65536], btable[65536];
 
 /* Supported output file types:
-    BMP - Windows Bit MaPs
-    PPM - Portable Pix Maps
-    XPM - X-windows Pix Maps */
+	BMP - Windows Bit MaPs
+	PPM - Portable Pix Maps
+	XPM - X-windows Pix Maps */
 
 double log_2(double x) {
 	return(log(x) / log(2.0));
@@ -216,7 +219,8 @@ double rainMin = 1000.0, rainMax = -1000.0;
 
 double rainShadow = 0.0; /* approximate rain shadow */
 
-int makeBiomes = 0; /* if 1, make biome map, if 2, use alternate biomes color scheme */
+int makeBiomes = 0; /* if 1, make biome map, if 2, use alternate biome palette */
+int biomesFromFile = 0; /* if 1, use biome colors from external file */
 
 int matchMap = 0;
 double matchSize = 0.1;
@@ -245,16 +249,6 @@ double cR1, sR1, cR2, sR2;
 
 char cmdLine[1000]; /* command line info */
 
-/* Windows is kinda shit: https://stackoverflow.com/a/4234022 */
-/* Defining min and max in system headers is a bad idea. */
-#ifdef WIN32
-#undef min
-#undef max
-#elif _WIN32
-#undef min
-#undef max
-#endif
-
 int min(int x, int y) {
 	return(x < y ? x : y);
 }
@@ -270,11 +264,12 @@ int main(int ac, char **av) {
 	     orthographic(void), orthographic2(void), gnomonic(void), icosahedral(void), azimuth(void), conical(void);
 	int i;
 	double rand2(double, double),  planet1(double, double, double);
-	void readcolors(FILE *, const char *);
+	void readcolors(FILE *, const char *, const char *);
 	void readmap(void), makeoutline(int), smoothshades(void);
 	FILE *outfile, *colfile = NULL;
 	char filename[256] = "planet-map";
 	char colorsname[256] = "Olsson.col";
+	char biocolorsname[256] = "default.bio";
 	int do_file = 0, tmp = 0;
 	double tx, ty, tz;
 
@@ -352,13 +347,13 @@ int main(int ac, char **av) {
 				file_type = xpm;
 				break;
 			case 'R':
-				fprintf(stdout, "Torben Mogensen's planet map generator.");
-				fprintf(stdout, "Version: %s-mod\n", version);
+				fprintf(stdout, "Torben Mogensen's planet map generator.\n");
+				fprintf(stdout, "Version: %s\n", version);
 				fprintf(stdout, "Homepage: https://topps.diku.dk/torbenm/maps.msp\n");
 				fprintf(stdout, "Modified: https://github.com/MagicalDrizzle/planet-generator\n");
 				exit(0);
 			case 'C':
-				sscanf(av[++i], "%255[^\n]", colorsname);
+				sscanf(av[++i],"%255[^\n]", colorsname);
 				break;
 			case 'l':
 				sscanf(av[++i], "%lf", &longi);
@@ -446,10 +441,15 @@ int main(int ac, char **av) {
 				rainfall = 1;
 				break;
 			case 'z':
-				makeBiomes = 1;
+				makeBiomes += 1;
+				if (makeBiomes > 2) {
+					makeBiomes = 2;
+				}
 				break;
 			case 'Z':
-				makeBiomes = 2;
+				sscanf(av[++i],"%255[^\n]",biocolorsname);
+				biomesFromFile = 1;
+				makeBiomes = 1;
 				break;
 			case 'p':
 				if (strlen(av[i]) > 2) view = av[i][2];
@@ -488,13 +488,16 @@ int main(int ac, char **av) {
 			print_error();
 		}
 	}
-
-	readcolors(colfile, colorsname);
-
-	if (do_file && '\0' != filename[0]) {
-		if (strchr (filename, '.') == 0) {
-			strcpy(&(filename[strlen(filename)]), file_ext(file_type));
-		}
+	if (strcmp(cmdLine, strcat(av[0], " ")) == 0) {
+		fprintf(stdout, "Note: you probably either double clicked the executable, or ran the program without any arguments.\n");
+		fprintf(stdout, "This will fill your terminal with random garbage for a while and possibly cause it to lag.\n");
+		fprintf(stdout, "Open a terminal window here and type '%s' along with some arguments instead.\n", av[0]);
+		fprintf(stdout, "You can access help with '%s-1'.\n", av[0]);
+		fprintf(stdout, "Press ENTER to exit...");
+		getchar();
+		exit(0);
+	}
+	readcolors(colfile, colorsname, biocolorsname);
 
 #ifdef macintosh
 		switch (file_type) {
@@ -511,6 +514,10 @@ int main(int ac, char **av) {
 		_fcreator = 'GKON';
 #endif
 
+	if (do_file && '\0' != filename[0]) {
+		if (strchr (filename, '.') == 0) {
+			strcpy(&(filename[strlen(filename)]), file_ext(file_type));
+		}
 		outfile = fopen(filename, "wb");
 
 #ifdef macintosh
@@ -685,8 +692,12 @@ int main(int ac, char **av) {
 	tetra[2].shadow = 0.0;
 	tetra[3].shadow = 0.0;
 
-	fprintf(stdout, "Progress:\n");
-	fprintf(stdout, "0----------50---------100%%\n");
+	fprintf(stderr, "Progress:\n");
+	fprintf(stderr, "0----------50---------100%%\n");
+	if (Height < 25) {
+		fprintf(stderr, "Note: The progress bar is disabled for map heights below 25 to\n");
+		fprintf(stderr, "      workaround a weird bug that prevent maps from being made.");
+	}
 
 	switch (view) {
 	case 'm': /* Mercator projection */
@@ -789,7 +800,6 @@ int main(int ac, char **av) {
 	if (doshade > 0) smoothshades();
 
 	fprintf(stdout, "\n");
-
 	/* plot picture */
 	switch (file_type) {
 	case ppm:
@@ -811,7 +821,7 @@ int main(int ac, char **av) {
 	return(0);
 }
 
-void readcolors(FILE *colfile, const char* colorsname) {
+void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname) {
 	int cNum = 0, oldcNum, i;
 	if (NULL == (colfile = fopen(colorsname, "r"))) {
 		fprintf(stderr, "Cannot open %s\n", colorsname);
@@ -878,7 +888,8 @@ void readcolors(FILE *colfile, const char* colorsname) {
 	}
 
 	if (makeBiomes == 1) {
-		/* make biome colours */
+		/* set default biome colours */
+		rtable['I' - 64 + LAND] = 255, gtable['I' - 64 + LAND] = 255, btable['I' - 64 + LAND] = 255;
 		rtable['T' - 64 + LAND] = 210, gtable['T' - 64 + LAND] = 210, btable['T' - 64 + LAND] = 210;
 		rtable['G' - 64 + LAND] = 250, gtable['G' - 64 + LAND] = 215, btable['G' - 64 + LAND] = 165;
 		rtable['B' - 64 + LAND] = 105, gtable['B' - 64 + LAND] = 155, btable['B' - 64 + LAND] = 120;
@@ -889,9 +900,9 @@ void readcolors(FILE *colfile, const char* colorsname) {
 		rtable['W' - 64 + LAND] = 185, gtable['W' - 64 + LAND] = 150, btable['W' - 64 + LAND] = 160;
 		rtable['E' - 64 + LAND] = 130, gtable['E' - 64 + LAND] = 190, btable['E' - 64 + LAND] =  25;
 		rtable['O' - 64 + LAND] = 110, gtable['O' - 64 + LAND] = 160, btable['O' - 64 + LAND] = 170;
-		rtable['I' - 64 + LAND] = 255, gtable['I' - 64 + LAND] = 255, btable['I' - 64 + LAND] = 255;
 	} else if (makeBiomes == 2) {
-		/* biome alternate colors */
+		/* alternate biome colors from: https://space.geometrian.com/calcs/climate-sim.php) */
+		rtable['I' - 64 + LAND] = 255, gtable['I' - 64 + LAND] = 255, btable['I' - 64 + LAND] = 255;
 		rtable['T' - 64 + LAND] = 151, gtable['T' - 64 + LAND] = 169, btable['T' - 64 + LAND] = 173;
 		rtable['G' - 64 + LAND] = 144, gtable['G' - 64 + LAND] = 126, btable['G' - 64 + LAND] =  46;
 		rtable['B' - 64 + LAND] =  99, gtable['B' - 64 + LAND] = 143, btable['B' - 64 + LAND] =  82;
@@ -902,7 +913,25 @@ void readcolors(FILE *colfile, const char* colorsname) {
 		rtable['W' - 64 + LAND] = 185, gtable['W' - 64 + LAND] = 150, btable['W' - 64 + LAND] = 160;
 		rtable['E' - 64 + LAND] = 130, gtable['E' - 64 + LAND] = 190, btable['E' - 64 + LAND] =  25;
 		rtable['O' - 64 + LAND] =  26, gtable['O' - 64 + LAND] =  82, btable['O' - 64 + LAND] =  44;
-		rtable['I' - 64 + LAND] = 255, gtable['I' - 64 + LAND] = 255, btable['I' - 64 + LAND] = 255;
+	}
+
+	if (makeBiomes) {
+		if (biomesFromFile == 1) {
+			if (NULL == (colfile = fopen(biocolorsname, "r"))) {
+				fprintf(stderr, "Cannot open %s\n", biocolorsname);
+				exit(1);
+			}
+			while (!feof(colfile)) {
+				char letter;
+				int rValue,  gValue, bValue, result = 0;
+				result = fscanf(colfile, " %c %d %d %d", &letter, &rValue, &gValue, &bValue);
+				if (result > 0 && strchr("ITGBDSFRWEO", letter) != NULL) {
+					rtable[letter-64+LAND] = rValue;
+					gtable[letter-64+LAND] = gValue;
+					btable[letter-64+LAND] = bValue;
+				}
+			}
+		}
 	}
 }
 
@@ -1072,10 +1101,13 @@ void mercator(void) {
 	y = (1.0 + y) / (1.0 - y);
 	y = 0.5 * log(y);
 	k = (int)(0.5 * y * Width * scale / PI + 0.5);
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		y = PI * (2.0 * (j - k) - Height) / Width / scale;
 		y = exp(2. * y);
@@ -1098,10 +1130,13 @@ void peter(void) {
 	y = 2.0 * sin(lat);
 	k = (int)(0.5 * y * Width * scale / PI + 0.5);
 	water = land = 0;
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		y = 0.5 * PI * (2.0 * (j - k) - Height) / Width / scale;
 		if (fabs(y) > 1.0) {
@@ -1136,10 +1171,13 @@ void squarep(void) {
 	void planet0(double, double, double, int, int);
 
 	k = (int)(0.5 * lat * Width * scale / PI + 0.5);
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		y = (2.0 * (j - k) - Height) / Width / scale * PI;
 		if (fabs(y + y) > PI) {
@@ -1166,10 +1204,13 @@ void mollweide(void) {
 	int i, j;
 	void planet0(double, double, double, int, int);
 
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		y1 = 2 * (2.0 * j - Height) / Width / scale;
 		if (fabs(y1) >= 1.0) for (i = 0; i < Width ; i++) {
@@ -1210,10 +1251,13 @@ void sinusoid(void) {
 	void planet0(double, double, double, int, int);
 
 	k = (int)(lat * Width * scale / PI + 0.5);
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		y = (2.0 * (j - k) - Height) / Width / scale * PI;
 		if (fabs(y + y) > PI) for (i = 0; i < Width ; i++) {
@@ -1247,10 +1291,13 @@ void stereo(void) {
 	int i, j;
 	void planet0(double, double, double, int, int);
 
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		for (i = 0; i < Width ; i++) {
 			x = (2.0 * i - Width) / Height / scale;
@@ -1274,10 +1321,13 @@ void orthographic(void) {
 	int i, j;
 	void planet0(double, double, double, int, int);
 
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		for (i = 0; i < Width ; i++) {
 			x = (2.0 * i - Width) / Height / scale;
@@ -1304,10 +1354,13 @@ void orthographic2(void) {
 
 	ymin = 2.0;
 	ymax = -2.0;
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		for (i = 0; i < Width / 2 ; i++) {
 			x = (2.0 * i - Width / 2) / Height / scale;
@@ -1357,10 +1410,13 @@ void icosahedral(void) { /* modified version of gnomonic */
 	L1 =  10.812317;/* theoretically 10.9715145571469; */
 	L2 = -52.622632; /* theoretically -48.3100310579607; */
 	S = 55.6; /* found by experimentation */
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		for (i = 0; i < Width ; i++) {
 			x0 = 198.0 * (2.0 * i - Width) / Width / scale - 36;
@@ -1476,10 +1532,13 @@ void gnomonic(void) {
 	if (scale < 1.0) {
 		Depth = 3 * ((int)(log_2(scale * Height))) + 6 + 1.5 / scale;
 	}
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		for (i = 0; i < Width ; i++) {
 			x = (2.0 * i - Width) / Height / scale;
@@ -1501,10 +1560,13 @@ void azimuth(void) {
 	int i, j;
 	void planet0(double, double, double, int, int);
 
+
 	for (j = 0; j < Height; j++) {
-		if ((j % (Height / 25)) == 0) {
-			fprintf (stdout, "+");
-			fflush(stdout);
+		if (Height >= 25) { /* check line 698 for reasons */
+			if ((j % (Height / 25)) == 0) {
+				fprintf(stderr, "+");
+				fflush(stderr);
+			}
 		}
 		for (i = 0; i < Width ; i++) {
 			x = (2.0 * i - Width) / Height / scale;
@@ -1541,7 +1603,7 @@ void conical(void) {
 		y2 = sqrt(c * (1.0 - sin(lat / k1)) / (1.0 + sin(lat / k1)));
 		for (j = 0; j < Height; j++) {
 			if ((j % (Height / 25)) == 0) {
-				fprintf (stdout, "+");
+				fprintf(stdout, "+");
 				fflush(stdout);
 			}
 			for (i = 0; i < Width ; i++) {
@@ -1576,7 +1638,7 @@ void conical(void) {
 		y2 = sqrt(c * (1.0 - sin(lat / k1)) / (1.0 + sin(lat / k1)));
 		for (j = 0; j < Height; j++) {
 			if ((j % (Height / 25)) == 0) {
-				fprintf (stdout, "+");
+				fprintf(stdout, "+");
 				fflush(stdout);
 			}
 			for (i = 0; i < Width ; i++) {
@@ -2310,8 +2372,9 @@ void print_help(void) {
 	fprintf(stdout, "	 -P\t\t\tUse PPM file format (default is BMP)\n");
 	fprintf(stdout, "	 -x\t\t\tUse XPM file format (default is BMP)\n");
 	fprintf(stdout, "	 -H\t\t\tOutput heightfield (default is BMP)\n");
-	fprintf(stdout, "	 -z\t\t\tShow biomes\n");
-	fprintf(stdout, "	 -Z\t\t\tShow biomes (alternate color scheme)\n");
+	fprintf(stdout, "	 -z\t\t\tShow biomes using the default palette.\n");
+	fprintf(stdout, "	 \t\t\t(Use -z -z to use Ian's palette from: https://space.geometrian.com/calcs/climate-sim.php)\n");
+	fprintf(stdout, "	 -Z file\t\tShow biomes using custom biomes palette file\n");
 	fprintf(stdout, "	 -R\t\t\tPrint version info\n");
 	fprintf(stdout, "	 -p[projection]\t\tSpecifies projection:\n");
 	fprintf(stdout, "	 \t\t	   m = Mercator (default)\n");
