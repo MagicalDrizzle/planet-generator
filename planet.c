@@ -29,6 +29,13 @@ char version[] = "September 2023";
 
 /* The primitive user interface is primarily a result of portability concerns */
 
+
+#include <stdio.h>
+#include <errno.h>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+
 #ifdef THINK_C
 #define macintosh 1
 #endif
@@ -38,14 +45,17 @@ char version[] = "September 2023";
 #include <unix.h>
 #endif
 
+#ifdef WIN32
+#include <io.h>
+#undef min
+#undef max
 #define O_BINARY 0x8000
-
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <string.h>
+#elif _WIN32
+#include <io.h>
+#undef min
+#undef max
+#define O_BINARY 0x8000
+#endif
 
 int BLACK = 0;
 int WHITE = 1;
@@ -278,6 +288,7 @@ char **av;
   FILE *outfile, *colfile = NULL;
   char filename[256] = "planet-map";
   char colorsname[256] = "Olsson.col";
+  char biocolorsname[256] = "default.bio";
   int do_file = 0, tmp = 0;
   double tx, ty, tz;
 
@@ -342,14 +353,16 @@ char **av;
         case 'm' : sscanf(av[++i],"%lf",&scale);
 	           if (scale < 0.1) scale = 0.1;
                    break;
-        case 'o' : sscanf(av[++i],"%s",filename);
+        case 'o' : sscanf(av[++i],"%255[^\n]",filename);
                    do_file = 1;
                    break;
         case 'x' : file_type =xpm;
                    break;
         case 'R' : fprintf(stderr, "Version: %s\n", version);
                    break;
-        case 'C' : sscanf(av[++i],"%s",colorsname);
+        case 'C' : sscanf(av[++i],"%255[^\n]",colorsname);
+                   break;
+        case 'Z' : sscanf(av[++i],"%255[^\n]",biocolorsname);
                    break;
         case 'l' : sscanf(av[++i],"%lf",&longi);
                    while (longi<-180) longi += 360;
@@ -427,31 +440,23 @@ char **av;
                      case 'c' :
                      case 'M' :
                      case 'S' :
-                     case 'i' :
-                     case 'f' : break;
-             case 'h' : file_type = heightfield; break;
+                     case 'i' : break;
+                     case 'h' : file_type = heightfield; break;
                      default: fprintf(stderr,"Unknown projection: %s\n",av[i]);
-                              print_error(do_file ? filename : "standard output",
-                                         !do_file ? "" : file_ext(file_type));
+                              print_error();
                    }
                    break;
         default: fprintf(stderr,"Unknown option: %s\n",av[i]);
-                 print_error(do_file ? filename : "standard output",
-                            !do_file ? "" : file_ext(file_type));
+                 print_error();
       }
     }
     else {
       fprintf(stderr,"Unknown option: %s\n\n",av[i]);
-      print_error(do_file ? filename : "standard output",
-                 !do_file ? "" : file_ext(file_type));
+      print_error();
     }
   }
 
-  readcolors(colfile, colorsname);
-
-  if (do_file &&'\0' != filename[0]) {
-    if (strchr (filename, '.') == 0)
-      strcpy(&(filename[strlen(filename)]), file_ext(file_type));
+  readcolors(colfile, colorsname, biocolorsname);
 
 #ifdef macintosh
     switch (file_type)
@@ -469,6 +474,10 @@ char **av;
 
     _fcreator ='GKON';
 #endif
+
+  if (do_file &&'\0' != filename[0]) {
+    if (strchr (filename, '.') == 0)
+      strcpy(&(filename[strlen(filename)]), file_ext(file_type));
 
     outfile = fopen(filename,"wb");
 
@@ -772,7 +781,7 @@ char **av;
   return(0);
 }
 
-void readcolors(FILE *colfile, char* colorsname)
+void readcolors(FILE *colfile, char* colorsname, char* biocolorsname)
 {
   int crow, cNum = 0, oldcNum, i;
 
@@ -850,7 +859,10 @@ void readcolors(FILE *colfile, char* colorsname)
   }
 
   if (makeBiomes) {
-  /* make biome colours */
+  /* set default biome colours */
+  rtable['I'-64+LAND] = 255;
+  gtable['I'-64+LAND] = 255;
+  btable['I'-64+LAND] = 255;
   rtable['T'-64+LAND] = 210;
   gtable['T'-64+LAND] = 210;
   btable['T'-64+LAND] = 210;
@@ -881,9 +893,27 @@ void readcolors(FILE *colfile, char* colorsname)
   rtable['O'-64+LAND] = 110;
   gtable['O'-64+LAND] = 160;
   btable['O'-64+LAND] = 170;
-  rtable['I'-64+LAND] = 255;
-  gtable['I'-64+LAND] = 255;
-  btable['I'-64+LAND] = 255;
+
+    if (NULL == (colfile = fopen(biocolorsname, "r")))
+      {
+	fprintf(stderr,
+		"Cannot open %s\n",
+		biocolorsname);
+	exit(1);
+      }
+    for (crow = 0; !feof(colfile); crow++)
+      {
+	char letter;
+	int rValue,  gValue,  bValue, result = 0;
+	result = fscanf(colfile, " %c %d %d %d",
+			&letter, &rValue, &gValue, &bValue);
+
+	if (result > 0 && strchr("ITGBDSFRWEO",letter)>0) {
+	  rtable[letter-64+LAND] = rValue;
+	  gtable[letter-64+LAND] = gValue;
+	  btable[letter-64+LAND] = bValue;
+	}
+      }
   }
 }
 
@@ -2171,9 +2201,9 @@ FILE *outfile;
   fclose(outfile);
 }
 
-void print_error(char *filename, char *ext)
+void print_error()
 {
   fprintf(stderr,"Usage: planet [options]\n\n");
-  fprintf(stderr,"See Manual.txt for details\n\n");
+  fprintf(stderr,"See manual for details\n\n");
   exit(0);
 }
