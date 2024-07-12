@@ -493,7 +493,7 @@ int main(int ac, char **av) {
 		fprintf(stdout, "This will fill your terminal with random garbage for a while and possibly cause it to lag.\n");
 		fprintf(stdout, "Open a terminal window here and type '%s' along with some arguments instead.\n", av[0]);
 		fprintf(stdout, "You can access help with '%s-1'.\n", av[0]);
-		fprintf(stdout, "Press ENTER to exit.");
+		fprintf(stdout, "Press ENTER to exit...");
 		getchar();
 		exit(0);
 	}
