@@ -488,12 +488,22 @@ int main(int ac, char **av) {
 			print_error();
 		}
 	}
-	if (strcmp(cmdLine, strcat(av[0], " ")) == 0) {
+	if (ac == 1) {
+		char *binname = strrchr(av[0], '\\');
+		if (binname == NULL) {
+			binname = strrchr(av[0], '/');
+			if (binname == NULL) {
+				binname = av[0];
+			} else {
+				binname++;
+			}
+		} else {
+			binname++;
+		}
 		fprintf(stdout, "Note: you probably either double clicked the executable, or ran the program without any arguments.\n");
 		fprintf(stdout, "This will fill your terminal with random garbage for a while and possibly cause it to lag.\n");
-		fprintf(stdout, "Open a terminal window here and type '%s' along with some arguments instead.\n", av[0]);
-		fprintf(stdout, "You can access help with '%s-1'.\n", av[0]);
-		fprintf(stdout, "Press ENTER to exit...");
+		fprintf(stdout, "Open a terminal window here and type '%s' along with some arguments instead.\n", binname);
+		fprintf(stdout, "You can access help with '%s -1'.\nPress ENTER to exit...", binname);
 		getchar();
 		exit(0);
 	}
@@ -692,8 +702,7 @@ int main(int ac, char **av) {
 	tetra[2].shadow = 0.0;
 	tetra[3].shadow = 0.0;
 
-	fprintf(stderr, "Progress:\n");
-	fprintf(stderr, "0----------50---------100%%\n");
+	fprintf(stderr, "Progress:\n0----------50---------100%%\n");
 	if (Height < 25) {
 		fprintf(stderr, "Note: The progress bar is disabled for map heights below 25 to\n");
 		fprintf(stderr, "      workaround a weird bug that prevent maps from being made.");
