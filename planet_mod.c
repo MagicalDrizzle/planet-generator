@@ -32,9 +32,9 @@ char version[] = "July 2024-mod";
 
 /* The primitive user interface is primarily a result of portability concerns */
 
-#include <stdio.h>
 #include <errno.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -337,7 +337,7 @@ int main(int ac, char **av) {
 				break;
 			case 'm':
 				sscanf(av[++i], "%lf", &scale);
-				if (scale < 0.1) scale = 0.1;
+				if (scale < 0.1) {scale = 0.1;}
 				break;
 			case 'o':
 				sscanf(av[++i], "%255[^\n]", filename);
@@ -357,13 +357,13 @@ int main(int ac, char **av) {
 				break;
 			case 'l':
 				sscanf(av[++i], "%lf", &longi);
-				while (longi < -180) longi += 360;
-				while (longi > 180) longi -= 360;
+				while (longi < -180) {longi += 360;}
+				while (longi > 180) {longi -= 360;}
 				break;
 			case 'L':
 				sscanf(av[++i], "%lf", &lat);
-				if (lat < -90) lat = -90;
-				if (lat > 90) lat = 90;
+				if (lat < -90) {lat = -90;}
+				if (lat > 90) {lat = 90;}
 				break;
 			case 'g':
 				sscanf(av[++i], "%lf", &vgrid);
@@ -386,16 +386,14 @@ int main(int ac, char **av) {
 				do_bw = 1;
 				if (strlen(av[i]) > 2) {
 					sscanf(av[i], "-O%d", &tmp);
-					if (tmp < 0) coastContourLines = -tmp;
-					else contourLines = tmp;
+					if (tmp < 0) {coastContourLines = -tmp;} else {contourLines = tmp;}
 				}
 				break;
 			case 'E':
 				do_outline = 1;
 				if (strlen(av[i]) > 2) {
 					sscanf(av[i], "-E%d", &tmp);
-					if (tmp < 0) coastContourLines = -tmp;
-					else contourLines = tmp;
+					if (tmp < 0) {coastContourLines = -tmp;} else {contourLines = tmp;}
 				}
 				break;
 			case 'B':
@@ -429,10 +427,10 @@ int main(int ac, char **av) {
 			case 'T':
 				sscanf(av[++i], " %lf", &rotate2);
 				sscanf(av[++i], " %lf", &rotate1);
-				while (rotate1 < -180) rotate1 += 360;
-				while (rotate1 > 180) rotate1 -= 360;
-				while (rotate2 < -180) rotate2 += 360;
-				while (rotate2 > 180) rotate2 += 360;
+				while (rotate1 < -180) {rotate1 += 360;}
+				while (rotate1 > 180) {rotate1 -= 360;}
+				while (rotate2 < -180) {rotate2 += 360;}
+				while (rotate2 > 180) {rotate2 += 360;}
 				break;
 			case 't':
 				temperature = 1;
@@ -452,8 +450,7 @@ int main(int ac, char **av) {
 				makeBiomes = 1;
 				break;
 			case 'p':
-				if (strlen(av[i]) > 2) view = av[i][2];
-				else view = av[++i][0];
+				if (strlen(av[i]) > 2) {view = av[i][2];} else {view = av[++i][0];}
 				switch (view) {
 				case 'm':
 				case 'p':
@@ -582,7 +579,7 @@ int main(int ac, char **av) {
 		tetra[i].z = sR1 * ty + cR1 * tz;
 	}
 
-	if (matchMap) readmap();
+	if (matchMap) {readmap();}
 
 	if (file_type == heightfield) {
 		heights = (int**)calloc(Width, sizeof(int*));
@@ -671,9 +668,9 @@ int main(int ac, char **av) {
 	}
 
 	if (view == 'c' || view == 'm') {
-		if (lat == 0) view = 'm';
+		if (lat == 0) {view = 'm';}
 		/* Conical approaches mercator when lat -> 0 */
-		if (fabs(lat) >= PI - 0.000001) view = 's';
+		if (fabs(lat) >= PI - 0.000001) {view = 's';}
 		/* Conical approaches stereo when lat -> +/- 90 */
 		/* Also to avoid division by 0 for Mercator when lat -> +/- 90 */
 	}
@@ -750,7 +747,7 @@ int main(int ac, char **av) {
 		break;
 	}
 
-	if (do_outline) makeoutline(do_bw);
+	if (do_outline) {makeoutline(do_bw);}
 
 	if (vgrid != 0.0) { /* draw longitudes */
 		int i, j;
@@ -806,22 +803,19 @@ int main(int ac, char **av) {
 		}
 	}
 
-	if (doshade > 0) smoothshades();
+	if (doshade > 0) {smoothshades();}
 
 	fprintf(stdout, "\n");
 	/* plot picture */
 	switch (file_type) {
 	case ppm:
-		if (do_bw) printppmBW(outfile);
-		else printppm(outfile);
+		if (do_bw) {printppmBW(outfile);} else {printppm(outfile);}
 		break;
 	case xpm:
-		if (do_bw) printxpmBW(outfile);
-		else printxpm(outfile);
+		if (do_bw) {printxpmBW(outfile);} else {printxpm(outfile);}
 		break;
 	case bmp:
-		if (do_bw) printbmpBW(outfile);
-		else printbmp(outfile);
+		if (do_bw) {printbmpBW(outfile);} else {printbmp(outfile);}
 		break;
 	case heightfield:
 		printheights(outfile);
@@ -866,8 +860,8 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 		oldcNum = cNum; /* remember last colour number */
 		result = fscanf(colfile, " %d %d %d %d", &cNum, &rValue, &gValue, &bValue);
 		if (result > 0) {
-			if (cNum < oldcNum) cNum = oldcNum;
-			if (cNum > 65535) cNum = 65535;
+			if (cNum < oldcNum) {cNum = oldcNum;}
+			if (cNum > 65535) {cNum = 65535;}
 			rtable[cNum] = rValue;
 			gtable[cNum] = gValue;
 			btable[cNum] = bValue;
@@ -883,7 +877,7 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 	fclose(colfile);
 
 	nocols = cNum + 1;
-	if (nocols < 10) nocols = 10;
+	if (nocols < 10) {nocols = 10;}
 
 	HIGHEST = nocols - 1;
 	SEA = (HIGHEST + LOWEST) / 2;
@@ -1076,7 +1070,7 @@ void readmap(void) { /* reads in a map for matching */
 			}
 		}
 		c = getchar();
-		if (c != '\n') printf("Wrong map format: %c\n", c);
+		if (c != '\n') {printf("Wrong map format: %c\n", c);}
 	}
 	/* interpolate */
 	for (j = 1; j < Height; j += 2) {
@@ -1222,10 +1216,12 @@ void mollweide(void) {
 			}
 		}
 		y1 = 2 * (2.0 * j - Height) / Width / scale;
-		if (fabs(y1) >= 1.0) for (i = 0; i < Width ; i++) {
+		if (fabs(y1) >= 1.0) {
+			for (i = 0; i < Width ; i++) {
 				col[i][j] = BACK;
 				if (doshade > 0) {shades[i][j] = 255;}
-			}else {
+			}
+		} else {
 			zz = sqrt(1.0 - y1 * y1);
 			y = 2.0 / PI * (y1 * zz + asin(y1));
 			cos2 = sqrt(1.0 - y * y);
@@ -1269,10 +1265,12 @@ void sinusoid(void) {
 			}
 		}
 		y = (2.0 * (j - k) - Height) / Width / scale * PI;
-		if (fabs(y + y) > PI) for (i = 0; i < Width ; i++) {
+		if (fabs(y + y) > PI) {
+			for (i = 0; i < Width ; i++) {
 				col[i][j] = BACK;
 				if (doshade > 0) {shades[i][j] = 255;}
-			}else {
+			}
+		} else {
 			cos2 = cos(y);
 			if (cos2 > 0.0) {
 				scale1 = scale * Width / Height / cos2 / PI;
@@ -1319,7 +1317,7 @@ void stereo(void) {
 			x1 = clo * x + slo * sla * y + slo * cla * z;
 			y1 = cla * y - sla * z;
 			z1 = -slo * x + clo * sla * y + clo * cla * z;
-			if (scale < 1.0) Depth = 3 * ((int)(log_2(scale * Height))) + 6 + 1.5 / scale;
+			if (scale < 1.0) {Depth = 3 * ((int)(log_2(scale * Height))) + 6 + 1.5 / scale;}
 			planet0(x1, y1, z1, i, j);
 		}
 	}
@@ -1382,8 +1380,8 @@ void orthographic2(void) {
 				x1 = clo * x + slo * sla * y + slo * cla * z;
 				y1 = cla * y - sla * z;
 				z1 = -slo * x + clo * sla * y + clo * cla * z;
-				if (y1 < ymin) ymin = y1;
-				if (y1 > ymax) ymax = y1;
+				if (y1 < ymin) {ymin = y1;}
+				if (y1 > ymax) {ymax = y1;}
 				planet0(x1, y1, z1, i, j);
 			}
 		}
@@ -1400,8 +1398,8 @@ void orthographic2(void) {
 				x1 = cos(longi1) * x + sin(longi1) * sin(lat1) * y + sin(longi1) * cos(lat1) * z;
 				y1 = cos(lat1) * y - sin(lat1) * z;
 				z1 = -sin(longi1) * x + cos(longi1) * sin(lat1) * y + cos(longi1) * cos(lat1) * z;
-				if (y1 < ymin) ymin = y1;
-				if (y1 > ymax) ymax = y1;
+				if (y1 < ymin) {ymin = y1;}
+				if (y1 > ymax) {ymax = y1;}
 				planet0(x1, y1, z1, i, j);
 			}
 		}
@@ -1720,7 +1718,7 @@ void planet0(double x, double y, double z, int i, int j) {
 	if (nonLinear) {alt = alt * alt * alt * 300;}
 
 	/* store height for heightfield */
-	if (file_type == heightfield) heights[i][j] = 10000000 * alt;
+	if (file_type == heightfield) {heights[i][j] = 10000000 * alt;}
 
 	y2 = y * y;
 	y2 = y2 * y2;
@@ -1734,7 +1732,7 @@ void planet0(double x, double y, double z, int i, int j) {
 		char bio = biomes[tt][rr];
 		if (alt <= 0.0) {
 			colour = SEA + (int)((SEA - LOWEST + 1) * (10 * alt));
-			if (colour < LOWEST) colour = LOWEST;
+			if (colour < LOWEST) {colour = LOWEST;}
 		} else {
 			colour = bio - 64 + LAND; /* from LAND+2 to LAND+23 */
 		}
@@ -1793,17 +1791,17 @@ double planet(vertex a, vertex b, vertex c, vertex d, double x, double y, double
 		lcd = dist2(c, d);
 
 		maxlength = lab;
-		if (lac > maxlength) maxlength = lac;
-		if (lad > maxlength) maxlength = lad;
-		if (lbc > maxlength) maxlength = lbc;
-		if (lbd > maxlength) maxlength = lbd;
-		if (lcd > maxlength) maxlength = lcd;
+		if (lac > maxlength) {maxlength = lac;}
+		if (lad > maxlength) {maxlength = lad;}
+		if (lbc > maxlength) {maxlength = lbc;}
+		if (lbd > maxlength) {maxlength = lbd;}
+		if (lcd > maxlength) {maxlength = lcd;}
 
-		if (lac == maxlength) return(planet(a,c,b,d, x,y,z, level));
-		if (lad == maxlength) return(planet(a,d,b,c, x,y,z, level));
-		if (lbc == maxlength) return(planet(b,c,a,d, x,y,z, level));
-		if (lbd == maxlength) return(planet(b,d,a,c, x,y,z, level));
-		if (lcd == maxlength) return(planet(c,d,a,b, x,y,z, level));
+		if (lac == maxlength) {return(planet(a,c,b,d, x,y,z, level));}
+		if (lad == maxlength) {return(planet(a,d,b,c, x,y,z, level));}
+		if (lbc == maxlength) {return(planet(b,c,a,d, x,y,z, level));}
+		if (lbd == maxlength) {return(planet(b,d,a,c, x,y,z, level));}
+		if (lcd == maxlength) {return(planet(c,d,a,b, x,y,z, level));}
 
 		if (level == 11) { /* save tetrahedron for caching */
 			ssa = a;
@@ -1857,9 +1855,9 @@ double planet(vertex a, vertex b, vertex c, vertex d, double x, double y, double
 			z1 = 0.5 * (a.z + b.z);
 			z1 = a.h * (z1 - a.z) + b.h * (z1 - b.z);
 			l1 = sqrt(x1 * x1 + y1 * y1 + z1 * z1);
-			if (l1 == 0.0) l1 = 1.0;
+			if (l1 == 0.0) {l1 = 1.0;}
 			tmp = sqrt(1.0 - y * y);
-			if (tmp < 0.0001) tmp = 0.0001;
+			if (tmp < 0.0001) {tmp = 0.0001;}
 			z2 = -z / tmp * x1 + x / tmp * z1;
 			if (lab > 0.04) {
 				e.shadow = (a.shadow + b.shadow - cos(PI * shade_angle / 180.0) * z2 / l1) / 3.0;
@@ -1929,7 +1927,7 @@ double planet(vertex a, vertex b, vertex c, vertex d, double x, double y, double
 				z1 += z * l1;
 			}
 			l1 = sqrt(x1 * x1 + y1 * y1 + z1 * z1);
-			if (l1 == 0.0) l1 = 1.0;
+			if (l1 == 0.0) {l1 = 1.0;}
 			x2 = cos(PI * shade_angle / 180.0 - 0.5 * PI) * cos(PI * shade_angle2 / 180.0);
 			y2 = -sin(PI * shade_angle2 / 180.0);
 			z2 = -sin(PI * shade_angle / 180.0 - 0.5 * PI) * cos(PI * shade_angle2 / 180.0);
@@ -2032,12 +2030,13 @@ void printppm(FILE *outfile) { /* prints picture in PPM (portable pixel map) for
 			}
 		}
 	} else {
-		for (j = 0; j < Height; j++)
+		for (j = 0; j < Height; j++) {
 			for (i = 0; i < Width; i++) {
 				putc(rtable[col[i][j]], outfile);
 				putc(gtable[col[i][j]], outfile);
 				putc(btable[col[i][j]], outfile);
 			}
+		}
 	}
 	fclose(outfile);
 }
@@ -2050,7 +2049,7 @@ void printppmBW(FILE *outfile) { /* prints picture in b/w PPM format */
 	fprintf(outfile, "# Command line:\n# %s\n", cmdLine);
 	fprintf(outfile, "%d %d 1\n", Width, Height);
 
-	for (j = 0; j < Height; j++)
+	for (j = 0; j < Height; j++) {
 		for (i = 0; i < Width; i++) {
 			if (col[i][j] < WHITE) {
 				c = 0;
@@ -2061,6 +2060,7 @@ void printppmBW(FILE *outfile) { /* prints picture in b/w PPM format */
 			putc(c, outfile);
 			putc(c, outfile);
 		}
+	}
 	fclose(outfile);
 }
 
@@ -2154,7 +2154,7 @@ void printbmp(FILE *outfile) { /* prints picture in BMP format */
 				if (c > 255) {c = 255;}
 				putc(c, outfile);
 			}
-			for (i = 3 * Width; i < W1; i++) putc(0, outfile);
+			for (i = 3 * Width; i < W1; i++) {putc(0, outfile);}
 		}
 	} else {
 		for (j = Height - 1; j >= 0; j--) {
@@ -2163,7 +2163,7 @@ void printbmp(FILE *outfile) { /* prints picture in BMP format */
 				putc(gtable[col[i][j]], outfile);
 				putc(rtable[col[i][j]], outfile);
 			}
-			for (i = 3 * Width; i < W1; i++) putc(0, outfile);
+			for (i = 3 * Width; i < W1; i++) {putc(0, outfile);}
 		}
 	}
 	fprintf(outfile, "Command line:\n%s\n", cmdLine);
@@ -2256,7 +2256,7 @@ void printbmpBW(FILE *outfile) { /* prints picture in b/w BMP format */
 	putc(255, outfile);
 	putc(255, outfile);
 
-	for (j = Height - 1; j >= 0; j--)
+	for (j = Height - 1; j >= 0; j--) {
 		for (i = 0; i < W1; i += 8) {
 			if (i < Width && col[i][j] >= WHITE) {c = 128;} else {c = 0;}
 			if (i + 1 < Width && col[i + 1][j] >= WHITE) {c += 64;}
@@ -2268,6 +2268,7 @@ void printbmpBW(FILE *outfile) { /* prints picture in b/w BMP format */
 			if (i + 7 < Width && col[i + 7][j] >= WHITE) {c += 1;}
 			putc(c, outfile);
 		}
+	}
 	fprintf(outfile, "Command line:\n%s\n", cmdLine);
 	fclose(outfile);
 }
