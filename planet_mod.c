@@ -32,9 +32,9 @@ char version[] = "July 2024-mod";
 
 /* The primitive user interface is primarily a result of portability concerns */
 
-#include <stdio.h>
 #include <errno.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -1222,10 +1222,12 @@ void mollweide(void) {
 			}
 		}
 		y1 = 2 * (2.0 * j - Height) / Width / scale;
-		if (fabs(y1) >= 1.0) for (i = 0; i < Width ; i++) {
+		if (fabs(y1) >= 1.0) {
+			for (i = 0; i < Width ; i++) {
 				col[i][j] = BACK;
 				if (doshade > 0) {shades[i][j] = 255;}
-			}else {
+			}
+		} else {
 			zz = sqrt(1.0 - y1 * y1);
 			y = 2.0 / PI * (y1 * zz + asin(y1));
 			cos2 = sqrt(1.0 - y * y);
@@ -1269,10 +1271,12 @@ void sinusoid(void) {
 			}
 		}
 		y = (2.0 * (j - k) - Height) / Width / scale * PI;
-		if (fabs(y + y) > PI) for (i = 0; i < Width ; i++) {
+		if (fabs(y + y) > PI) {
+			for (i = 0; i < Width ; i++) {
 				col[i][j] = BACK;
 				if (doshade > 0) {shades[i][j] = 255;}
-			}else {
+			}
+		} else {
 			cos2 = cos(y);
 			if (cos2 > 0.0) {
 				scale1 = scale * Width / Height / cos2 / PI;
@@ -1319,7 +1323,7 @@ void stereo(void) {
 			x1 = clo * x + slo * sla * y + slo * cla * z;
 			y1 = cla * y - sla * z;
 			z1 = -slo * x + clo * sla * y + clo * cla * z;
-			if (scale < 1.0) Depth = 3 * ((int)(log_2(scale * Height))) + 6 + 1.5 / scale;
+			if (scale < 1.0) {Depth = 3 * ((int)(log_2(scale * Height))) + 6 + 1.5 / scale;}
 			planet0(x1, y1, z1, i, j);
 		}
 	}
@@ -1720,7 +1724,7 @@ void planet0(double x, double y, double z, int i, int j) {
 	if (nonLinear) {alt = alt * alt * alt * 300;}
 
 	/* store height for heightfield */
-	if (file_type == heightfield) heights[i][j] = 10000000 * alt;
+	if (file_type == heightfield) {heights[i][j] = 10000000 * alt;}
 
 	y2 = y * y;
 	y2 = y2 * y2;
@@ -2032,12 +2036,13 @@ void printppm(FILE *outfile) { /* prints picture in PPM (portable pixel map) for
 			}
 		}
 	} else {
-		for (j = 0; j < Height; j++)
+		for (j = 0; j < Height; j++) {
 			for (i = 0; i < Width; i++) {
 				putc(rtable[col[i][j]], outfile);
 				putc(gtable[col[i][j]], outfile);
 				putc(btable[col[i][j]], outfile);
 			}
+		}
 	}
 	fclose(outfile);
 }
@@ -2050,7 +2055,7 @@ void printppmBW(FILE *outfile) { /* prints picture in b/w PPM format */
 	fprintf(outfile, "# Command line:\n# %s\n", cmdLine);
 	fprintf(outfile, "%d %d 1\n", Width, Height);
 
-	for (j = 0; j < Height; j++)
+	for (j = 0; j < Height; j++) {
 		for (i = 0; i < Width; i++) {
 			if (col[i][j] < WHITE) {
 				c = 0;
@@ -2061,6 +2066,7 @@ void printppmBW(FILE *outfile) { /* prints picture in b/w PPM format */
 			putc(c, outfile);
 			putc(c, outfile);
 		}
+	}
 	fclose(outfile);
 }
 
@@ -2256,7 +2262,7 @@ void printbmpBW(FILE *outfile) { /* prints picture in b/w BMP format */
 	putc(255, outfile);
 	putc(255, outfile);
 
-	for (j = Height - 1; j >= 0; j--)
+	for (j = Height - 1; j >= 0; j--) {
 		for (i = 0; i < W1; i += 8) {
 			if (i < Width && col[i][j] >= WHITE) {c = 128;} else {c = 0;}
 			if (i + 1 < Width && col[i + 1][j] >= WHITE) {c += 64;}
@@ -2268,6 +2274,7 @@ void printbmpBW(FILE *outfile) { /* prints picture in b/w BMP format */
 			if (i + 7 < Width && col[i + 7][j] >= WHITE) {c += 1;}
 			putc(c, outfile);
 		}
+	}
 	fprintf(outfile, "Command line:\n%s\n", cmdLine);
 	fclose(outfile);
 }
