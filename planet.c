@@ -278,7 +278,7 @@ int ac;
 char **av;
 {
   void printppm(), printppmBW(), printbmp(), printbmpBW(),
-       printxpm(), printxpmBW(), printheights(), print_error();
+    printxpm(), printxpmBW(), printheights(), print_error(), reportError(char c);
   void mercator(), peter(), squarep(), mollweide(), sinusoid(), stereo(),
     orthographic(), gnomonic(), icosahedral(), azimuth(), conical();
   int i;
@@ -340,43 +340,50 @@ char **av;
   for (i = 1; i<ac; i++) {
     if (av[i][0] == '-') {
       switch (av[i][1]) {
-        case 'V' : sscanf(av[++i],"%lf",&dd2);
-                   break;
-        case 'v' : sscanf(av[++i],"%lf",&dd1);
-                   break;
-        case 's' : sscanf(av[++i],"%lf",&rseed);
-                   break;
-        case 'w' : sscanf(av[++i],"%d",&Width);
-                   break;
-        case 'h' : sscanf(av[++i],"%d",&Height);
-                   break;
-        case 'm' : sscanf(av[++i],"%lf",&scale);
-	           if (scale < 0.1) scale = 0.1;
-                   break;
-        case 'o' : sscanf(av[++i],"%255[^\n]",filename);
-                   do_file = 1;
-                   break;
+        case 'V' : if (++i < ac &&  sscanf(av[i],"%lf",&dd2)) break;
+	           reportError('V');
+        case 'v' : if (++i < ac &&  sscanf(av[i],"%lf",&dd1)) break;
+	           reportError('v');
+        case 's' : if (++i < ac &&  sscanf(av[i],"%lf",&rseed)) break;
+		   reportError('s');
+        case 'w' : if (++i < ac &&  sscanf(av[i],"%d",&Width)) break;
+		   reportError('w');
+        case 'h' : if (++i < ac && sscanf(av[i],"%d",&Height)) break;
+		   reportError('h');
+        case 'm' : if (++i < ac && sscanf(av[i],"%lf",&scale)) {
+	             if (scale < 0.1) scale = 0.1;
+                     break;
+		   }
+		   reportError('m');
+        case 'o' : if (++i < ac && sscanf(av[i],"%255[^\n]",filename)) {
+                     do_file = 1;
+                     break;
+		   }
+		   reportError('o');
         case 'x' : file_type =xpm;
                    break;
         case 'R' : fprintf(stderr, "Version: %s\n", version);
                    break;
-        case 'C' : sscanf(av[++i],"%255[^\n]",colorsname);
-                   break;
-        case 'Z' : sscanf(av[++i],"%255[^\n]",biocolorsname);
-                   break;
-        case 'l' : sscanf(av[++i],"%lf",&longi);
-                   while (longi<-180) longi += 360;
-                   while (longi>180) longi -= 360;
-                   break;
-                   break;
-        case 'L' : sscanf(av[++i],"%lf",&lat);
-                   if (lat<-90) lat = -90;
-                   if (lat>90) lat = 90;
-                   break;
-        case 'g' : sscanf(av[++i],"%lf",&vgrid);
-                   break;
-        case 'G' : sscanf(av[++i],"%lf",&hgrid);
-                   break;
+        case 'C' : if (++i < ac && sscanf(av[i],"%255[^\n]",colorsname)) break;
+		   reportError('C');
+        case 'Z' : if (++i < ac && sscanf(av[i],"%255[^\n]",biocolorsname)) break;
+		   reportError('Z');
+        case 'l' : if (++i < ac && sscanf(av[i],"%lf",&longi)) {
+                     while (longi<-180) longi += 360;
+                     while (longi>180) longi -= 360;
+                     break;
+	           }
+		   reportError('l');
+	case 'L' : if (++i < ac && sscanf(av[i],"%lf",&lat)) {
+                     if (lat<-90) lat = -90;
+                     if (lat>90) lat = 90;
+                     break;
+		   }
+		   reportError('L');
+        case 'g' : if (++i < ac && sscanf(av[i],"%lf",&vgrid)) break;
+		   reportError('g');
+        case 'G' : if (++i < ac && sscanf(av[i],"%lf",&hgrid)) break;
+		   reportError('G');
         case 'c' : latic += 1;
                    break;
         case 'S' : dd1 /= 2.0; POWA = 0.75;
@@ -408,27 +415,31 @@ char **av;
                    break;
         case 'H' : file_type = heightfield;
                    break;
-        case 'M' : matchMap = 1;
-                   sscanf(av[++i],"%lf",&matchSize);
-                   break;
-        case 'a' : sscanf(av[++i],"%lf",&shade_angle);
-                   break;
-        case 'A' : sscanf(av[++i],"%lf",&shade_angle2);
-                   break;
-        case 'i' : sscanf(av[++i],"%lf",&M);
-                   break;
-        case 'T' : sscanf(av[++i]," %lf",&rotate2);
-                   sscanf(av[++i]," %lf",&rotate1);
-                   while (rotate1<-180) rotate1 += 360;
-                   while (rotate1>180) rotate1 -= 360;
-                   while (rotate2<-180) rotate2 += 360;
-                   while (rotate2>180) rotate2 += 360;
-                   break;
+        case 'M' : if (++i < ac && sscanf(av[i],"%lf",&matchSize)) {
+                     matchMap = 1;
+    	             break;
+		   }
+		   reportError('M');
+        case 'a' : if (++i < ac && sscanf(av[i],"%lf",&shade_angle)) break;
+		   reportError('a');
+        case 'A' : if (++i < ac && sscanf(av[i],"%lf",&shade_angle2)) break;
+		   reportError('A');
+        case 'i' : if (++i < ac && sscanf(av[i],"%lf",&M)) break;
+		   reportError('i');
+      case 'T' : if (++i < ac && sscanf(av[i]," %lf",&rotate2))
+		     if (++i < ac && sscanf(av[i]," %lf",&rotate1)) {
+                       while (rotate1<-180) rotate1 += 360;
+                       while (rotate1>180) rotate1 -= 360;
+                       while (rotate2<-180) rotate2 += 360;
+                       while (rotate2>180) rotate2 += 360;
+                       break;
+		     }
+		   reportError('T');
         case 't' : temperature = 1; break;
         case 'r' : rainfall = 1; break;
         case 'z' : makeBiomes = 1; break;
         case 'p' : if (strlen(av[i])>2) view = av[i][2];
-                   else view = av[++i][0];
+                   else if (++i < ac) view = av[i][0]; else view = ' ';
                    switch (view) {
                      case 'm' :
                      case 'p' :
@@ -894,26 +905,20 @@ void readcolors(FILE *colfile, char* colorsname, char* biocolorsname)
   gtable['O'-64+LAND] = 160;
   btable['O'-64+LAND] = 170;
 
-    if (NULL == (colfile = fopen(biocolorsname, "r")))
-      {
-	fprintf(stderr,
-		"Cannot open %s\n",
-		biocolorsname);
-	exit(1);
-      }
-    for (crow = 0; !feof(colfile); crow++)
-      {
-	char letter;
-	int rValue,  gValue,  bValue, result = 0;
-	result = fscanf(colfile, " %c %d %d %d",
-			&letter, &rValue, &gValue, &bValue);
-
-	if (result > 0 && strchr("ITGBDSFRWEO",letter)>0) {
-	  rtable[letter-64+LAND] = rValue;
-	  gtable[letter-64+LAND] = gValue;
-	  btable[letter-64+LAND] = bValue;
+    if (NULL != (colfile = fopen(biocolorsname, "r")))
+      for (crow = 0; !feof(colfile); crow++)
+	{
+	  char letter;
+	  int rValue,  gValue,  bValue, result = 0;
+	  result = fscanf(colfile, " %c %d %d %d",
+			  &letter, &rValue, &gValue, &bValue);
+	  
+	  if (result > 0 && strchr("ITGBDSFRWEO",letter)>0) {
+	    rtable[letter-64+LAND] = rValue;
+	    gtable[letter-64+LAND] = gValue;
+	    btable[letter-64+LAND] = bValue;
+	  }
 	}
-      }
   }
 }
 
@@ -2206,4 +2211,9 @@ void print_error()
   fprintf(stderr,"Usage: planet [options]\n\n");
   fprintf(stderr,"See manual for details\n\n");
   exit(0);
+}
+
+void reportError(char c) {
+  fprintf(stderr,"Missing or bad argument to option -%c\n",c);
+  print_error();
 }

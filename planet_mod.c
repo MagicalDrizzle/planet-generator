@@ -2,7 +2,7 @@
 /* planet generating program */
 /* Copyright 1988--present Torben AE. Mogensen */
 
-char version[] = "July 2024-mod";
+char version[] = "2024.07.22-mod";
 
 /* Dual hemispheres orthographic projection from Riviera71 */
 /* https://topps.diku.dk/torbenm/thread.msp?topic=218566649 */
@@ -257,9 +257,12 @@ int max(int x, int y) {
 	return(x < y ? y : x);
 }
 
+/* declarations moved here to fix implicit declaration by reportError(), line 2433 */
+void print_help(void), reportError(char c), print_error(void);
+
 int main(int ac, char **av) {
 	void printppm(FILE *), printppmBW(FILE *), printbmp(FILE *), printbmpBW(FILE *),
-	     printxpm(FILE *), printxpmBW(FILE *), printheights(FILE *), print_error(void), print_help(void);
+	     printxpm(FILE *), printxpmBW(FILE *), printheights(FILE *);
 	void mercator(void), peter(void), squarep(void), mollweide(void), sinusoid(void), stereo(void),
 	     orthographic(void), orthographic2(void), gnomonic(void), icosahedral(void), azimuth(void), conical(void);
 	int i;
@@ -321,28 +324,32 @@ int main(int ac, char **av) {
 		if (av[i][0] == '-') {
 			switch (av[i][1]) {
 			case 'V':
-				sscanf(av[++i], "%lf", &dd2);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &dd2)) break;
+				reportError('V');
 			case 'v':
-				sscanf(av[++i], "%lf", &dd1);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &dd1)) break;
+				reportError('v');
 			case 's':
-				sscanf(av[++i], "%lf", &rseed);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &rseed)) break;
+				reportError('s');
 			case 'w':
-				sscanf(av[++i], "%d", &Width);
-				break;
+				if (++i < ac && sscanf(av[i], "%d", &Width)) break;
+				reportError('w');
 			case 'h':
-				sscanf(av[++i], "%d", &Height);
-				break;
+				if (++i < ac && sscanf(av[i], "%d", &Height)) break;
+				reportError('h');
 			case 'm':
-				sscanf(av[++i], "%lf", &scale);
-				if (scale < 0.1) scale = 0.1;
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &scale)) {
+					if (scale < 0.1) {scale = 0.1;}
+					break;
+				}
+				reportError('m');
 			case 'o':
-				sscanf(av[++i], "%255[^\n]", filename);
-				do_file = 1;
-				break;
+				if (++i < ac && sscanf(av[i], "%255[^\n]", filename)) {
+					do_file = 1;
+					break;
+				}
+				reportError('o');
 			case 'x':
 				file_type = xpm;
 				break;
@@ -353,24 +360,28 @@ int main(int ac, char **av) {
 				fprintf(stdout, "Modified: https://github.com/MagicalDrizzle/planet-generator\n");
 				exit(0);
 			case 'C':
-				sscanf(av[++i],"%255[^\n]", colorsname);
-				break;
+				if (++i < ac && sscanf(av[i], "%255[^\n]", colorsname)) break;
+				reportError('C');
 			case 'l':
-				sscanf(av[++i], "%lf", &longi);
-				while (longi < -180) longi += 360;
-				while (longi > 180) longi -= 360;
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &longi)) {
+					while (longi < -180) longi += 360;
+					while (longi > 180) longi -= 360;
+					break;
+				}
+				reportError('l');
 			case 'L':
-				sscanf(av[++i], "%lf", &lat);
-				if (lat < -90) lat = -90;
-				if (lat > 90) lat = 90;
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &lat)) {
+					if (lat < -90) lat = -90;
+					if (lat > 90) lat = 90;
+					break;
+				}
+				reportError('L');
 			case 'g':
-				sscanf(av[++i], "%lf", &vgrid);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &vgrid)) break;
+				reportError('g');
 			case 'G':
-				sscanf(av[++i], "%lf", &hgrid);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &hgrid)) break;
+				reportError('G');
 			case 'c':
 				latic += 1;
 				break;
@@ -414,26 +425,31 @@ int main(int ac, char **av) {
 				file_type = heightfield;
 				break;
 			case 'M':
-				matchMap = 1;
-				sscanf(av[++i], "%lf", &matchSize);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &matchSize)) {
+					matchMap = 1;
+					break;
+				}
+				reportError('M');
 			case 'a':
-				sscanf(av[++i], "%lf", &shade_angle);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &shade_angle)) break;
+				reportError('a');
 			case 'A':
-				sscanf(av[++i], "%lf", &shade_angle2);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &shade_angle2)) break;
+				reportError('A');
 			case 'i':
-				sscanf(av[++i], "%lf", &M);
-				break;
+				if (++i < ac && sscanf(av[i], "%lf", &M)) break;
+				reportError('i');
 			case 'T':
-				sscanf(av[++i], " %lf", &rotate2);
-				sscanf(av[++i], " %lf", &rotate1);
-				while (rotate1 < -180) rotate1 += 360;
-				while (rotate1 > 180) rotate1 -= 360;
-				while (rotate2 < -180) rotate2 += 360;
-				while (rotate2 > 180) rotate2 += 360;
-				break;
+				if (++i < ac && sscanf(av[i], " %lf", &rotate1)) {
+					if (++i < ac && sscanf(av[i], " %lf", &rotate2)) {
+						while (rotate1 < -180) rotate1 += 360;
+						while (rotate1 > 180) rotate1 -= 360;
+						while (rotate2 < -180) rotate2 += 360;
+						while (rotate2 > 180) rotate2 += 360;
+						break;
+					}
+				}
+				reportError('T');
 			case 't':
 				temperature = 1;
 				break;
@@ -442,18 +458,23 @@ int main(int ac, char **av) {
 				break;
 			case 'z':
 				makeBiomes += 1;
-				if (makeBiomes > 2) {
-					makeBiomes = 2;
-				}
+				if (makeBiomes > 2) makeBiomes = 2;
 				break;
 			case 'Z':
-				sscanf(av[++i],"%255[^\n]",biocolorsname);
-				biomesFromFile = 1;
-				makeBiomes = 1;
-				break;
+				if (++i < ac && sscanf(av[i], "%255[^\n]", biocolorsname)) {
+					biomesFromFile = 1;
+					makeBiomes = 1;
+					break;
+				}
+				reportError('C');
 			case 'p':
-				if (strlen(av[i]) > 2) view = av[i][2];
-				else view = av[++i][0];
+				if (strlen(av[i]) > 2) {
+					view = av[i][2];
+				} else if (++i < ac) {
+					view = av[i][0];
+				} else {
+					view = ' ';
+				}
 				switch (view) {
 				case 'm':
 				case 'p':
@@ -1112,7 +1133,7 @@ void mercator(void) {
 	k = (int)(0.5 * y * Width * scale / PI + 0.5);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1141,7 +1162,7 @@ void peter(void) {
 	water = land = 0;
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1182,7 +1203,7 @@ void squarep(void) {
 	k = (int)(0.5 * lat * Width * scale / PI + 0.5);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1213,9 +1234,8 @@ void mollweide(void) {
 	int i, j;
 	void planet0(double, double, double, int, int);
 
-
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1264,7 +1284,7 @@ void sinusoid(void) {
 	k = (int)(lat * Width * scale / PI + 0.5);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1306,7 +1326,7 @@ void stereo(void) {
 
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1336,7 +1356,7 @@ void orthographic(void) {
 
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1369,7 +1389,7 @@ void orthographic2(void) {
 	ymax = -2.0;
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1425,7 +1445,7 @@ void icosahedral(void) { /* modified version of gnomonic */
 	S = 55.6; /* found by experimentation */
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1547,7 +1567,7 @@ void gnomonic(void) {
 	}
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1575,7 +1595,7 @@ void azimuth(void) {
 
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 698 for reasons */
+		if (Height >= 25) { /* check line 728 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -2408,6 +2428,11 @@ void print_help(void) {
 	fprintf(stdout, "	 \t\t	   i = Icosahedral\n");
 	fprintf(stdout, "\nSee Manual.pdf for detailed help.\n");
 	exit(0);
+}
+
+void reportError(char c) {
+	fprintf(stderr, "Missing or bad argument to option -%c\n", c);
+	print_error();
 }
 
 void print_error(void) {
