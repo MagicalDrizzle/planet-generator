@@ -114,7 +114,6 @@ char letters[64] = {
 	'k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
 };
 
-
 /* T = tundra, G = grasslands, B = Taiga / boreal forest, D = desert,
    S = savanna, F = temperate forest, R = temperate rainforest,
    W = Xeric shrubland and dry forest, E = tropical dry forest,
@@ -257,18 +256,16 @@ int max(int x, int y) {
 	return(x < y ? y : x);
 }
 
-/* declarations moved here to fix implicit declaration by reportError(), line 2433 */
-void print_help(void), reportError(char c), print_error(void);
-
 int main(int ac, char **av) {
-	void printppm(FILE *), printppmBW(FILE *), printbmp(FILE *), printbmpBW(FILE *),
-	     printxpm(FILE *), printxpmBW(FILE *), printheights(FILE *);
+	void printppm(FILE *outfile), printppmBW(FILE *outfile), printbmp(FILE *outfile), printbmpBW(FILE *outfile),
+	     printxpm(FILE *outfile), printxpmBW(FILE *outfile), printheights(FILE *outfile);
+	void print_help(void), print_error(void), print_error_args(char c);
 	void mercator(void), peter(void), squarep(void), mollweide(void), sinusoid(void), stereo(void),
 	     orthographic(void), orthographic2(void), gnomonic(void), icosahedral(void), azimuth(void), conical(void);
 	int i;
-	double rand2(double, double),  planet1(double, double, double);
-	void readcolors(FILE *, const char *, const char *);
-	void readmap(void), makeoutline(int), smoothshades(void);
+	double rand2(double p, double q),  planet1(double x, double y, double z);
+	void readcolors(FILE *colfile, const char *colorsname, const char *biocolorsname);
+	void readmap(void), makeoutline(int do_bw), smoothshades(void);
 	FILE *outfile, *colfile = NULL;
 	char filename[256] = "planet-map";
 	char colorsname[256] = "Olsson.col";
@@ -292,7 +289,6 @@ int main(int ac, char **av) {
 	tetra[3].x = sqrt(3.0) + 0.24;
 	tetra[3].y = sqrt(3.0) + 0.22;
 	tetra[3].z = -sqrt(3.0) - 0.25;
-
 
 #ifdef macintosh
 	_ftype = 'TEXT';
@@ -325,31 +321,38 @@ int main(int ac, char **av) {
 			switch (av[i][1]) {
 			case 'V':
 				if (++i < ac && sscanf(av[i], "%lf", &dd2)) break;
-				reportError('V');
+				print_error_args('V');
+				break;
 			case 'v':
 				if (++i < ac && sscanf(av[i], "%lf", &dd1)) break;
-				reportError('v');
+				print_error_args('v');
+				break;
 			case 's':
 				if (++i < ac && sscanf(av[i], "%lf", &rseed)) break;
-				reportError('s');
+				print_error_args('s');
+				break;
 			case 'w':
 				if (++i < ac && sscanf(av[i], "%d", &Width)) break;
-				reportError('w');
+				print_error_args('w');
+				break;
 			case 'h':
 				if (++i < ac && sscanf(av[i], "%d", &Height)) break;
-				reportError('h');
+				print_error_args('h');
+				break;
 			case 'm':
 				if (++i < ac && sscanf(av[i], "%lf", &scale)) {
 					if (scale < 0.1) {scale = 0.1;}
 					break;
 				}
-				reportError('m');
+				print_error_args('m');
+				break;
 			case 'o':
 				if (++i < ac && sscanf(av[i], "%255[^\n]", filename)) {
 					do_file = 1;
 					break;
 				}
-				reportError('o');
+				print_error_args('o');
+				break;
 			case 'x':
 				file_type = xpm;
 				break;
@@ -361,27 +364,32 @@ int main(int ac, char **av) {
 				exit(0);
 			case 'C':
 				if (++i < ac && sscanf(av[i], "%255[^\n]", colorsname)) break;
-				reportError('C');
+				print_error_args('C');
+				break;
 			case 'l':
 				if (++i < ac && sscanf(av[i], "%lf", &longi)) {
 					while (longi < -180) longi += 360;
 					while (longi > 180) longi -= 360;
 					break;
 				}
-				reportError('l');
+				print_error_args('l');
+				break;
 			case 'L':
 				if (++i < ac && sscanf(av[i], "%lf", &lat)) {
 					if (lat < -90) lat = -90;
 					if (lat > 90) lat = 90;
 					break;
 				}
-				reportError('L');
+				print_error_args('L');
+				break;
 			case 'g':
 				if (++i < ac && sscanf(av[i], "%lf", &vgrid)) break;
-				reportError('g');
+				print_error_args('g');
+				break;
 			case 'G':
 				if (++i < ac && sscanf(av[i], "%lf", &hgrid)) break;
-				reportError('G');
+				print_error_args('G');
+				break;
 			case 'c':
 				latic += 1;
 				break;
@@ -429,16 +437,20 @@ int main(int ac, char **av) {
 					matchMap = 1;
 					break;
 				}
-				reportError('M');
+				print_error_args('M');
+				break;
 			case 'a':
 				if (++i < ac && sscanf(av[i], "%lf", &shade_angle)) break;
-				reportError('a');
+				print_error_args('a');
+				break;
 			case 'A':
 				if (++i < ac && sscanf(av[i], "%lf", &shade_angle2)) break;
-				reportError('A');
+				print_error_args('A');
+				break;
 			case 'i':
 				if (++i < ac && sscanf(av[i], "%lf", &M)) break;
-				reportError('i');
+				print_error_args('i');
+				break;
 			case 'T':
 				if (++i < ac && sscanf(av[i], " %lf", &rotate1)) {
 					if (++i < ac && sscanf(av[i], " %lf", &rotate2)) {
@@ -449,7 +461,8 @@ int main(int ac, char **av) {
 						break;
 					}
 				}
-				reportError('T');
+				print_error_args('T');
+				break;
 			case 't':
 				temperature = 1;
 				break;
@@ -466,7 +479,8 @@ int main(int ac, char **av) {
 					makeBiomes = 1;
 					break;
 				}
-				reportError('C');
+				print_error_args('C');
+				break;
 			case 'p':
 				if (strlen(av[i]) > 2) {
 					view = av[i][2];
@@ -526,7 +540,7 @@ int main(int ac, char **av) {
 		fprintf(stdout, "Open a terminal window here and type '%s' along with some arguments instead.\n", binname);
 		fprintf(stdout, "You can access help with '%s -1'.\nPress ENTER to exit...", binname);
 		getchar();
-		exit(0);
+		exit(1);
 	}
 	readcolors(colfile, colorsname, biocolorsname);
 
@@ -558,7 +572,7 @@ int main(int ac, char **av) {
 
 		if (outfile == NULL) {
 			fprintf(stderr, "Could not open output file %s, error code = %d\n", filename, errno);
-			exit(0);
+			exit(1);
 		}
 	} else {
 		outfile = stdout;
@@ -1125,7 +1139,7 @@ void smoothshades(void) {
 void mercator(void) {
 	double y, scale1, cos2, theta1;
 	int i, j, k;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 
 	y = sin(lat);
 	y = (1.0 + y) / (1.0 - y);
@@ -1133,7 +1147,7 @@ void mercator(void) {
 	k = (int)(0.5 * y * Width * scale / PI + 0.5);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1155,14 +1169,14 @@ void mercator(void) {
 void peter(void) {
 	double y, cos2, theta1, scale1;
 	int k, i, j, water, land;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 
 	y = 2.0 * sin(lat);
 	k = (int)(0.5 * y * Width * scale / PI + 0.5);
 	water = land = 0;
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1198,12 +1212,12 @@ void peter(void) {
 void squarep(void) {
 	double y, scale1, theta1, cos2;
 	int k, i, j;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 
 	k = (int)(0.5 * lat * Width * scale / PI + 0.5);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1232,10 +1246,10 @@ void squarep(void) {
 void mollweide(void) {
 	double y, y1, zz, scale1, cos2, theta1;
 	int i, j;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1279,12 +1293,12 @@ void mollweide(void) {
 void sinusoid(void) {
 	double y, theta1, theta2, cos2, l1, i1, scale1;
 	int k, i, j, l;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 
 	k = (int)(lat * Width * scale / PI + 0.5);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1322,11 +1336,10 @@ void sinusoid(void) {
 void stereo(void) {
 	double x, y, z, zz, x1, y1, z1;
 	int i, j;
-	void planet0(double, double, double, int, int);
-
+	void planet0(double x, double y, double z, int i, int j);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1352,11 +1365,10 @@ void stereo(void) {
 void orthographic(void) {
 	double x, y, z, x1, y1, z1;
 	int i, j;
-	void planet0(double, double, double, int, int);
-
+	void planet0(double x, double y, double z, int i, int j);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1382,14 +1394,14 @@ void orthographic(void) {
 void orthographic2(void) {
 	double x, y, z, x1, y1, z1, ymin, ymax;
 	int i, j;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 	double lat1, longi1;
 
 	ymin = 2.0;
 	ymax = -2.0;
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1435,7 +1447,7 @@ void orthographic2(void) {
 void icosahedral(void) { /* modified version of gnomonic */
 	double x, y, z, x1, y1, z1, zz;
 	int i, j;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 	double lat1, longi1, x0, y0, sq3;
 	double L1, L2, S;
 
@@ -1445,7 +1457,7 @@ void icosahedral(void) { /* modified version of gnomonic */
 	S = 55.6; /* found by experimentation */
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1560,14 +1572,14 @@ void icosahedral(void) { /* modified version of gnomonic */
 void gnomonic(void) {
 	double x, y, z, x1, y1, z1, zz;
 	int i, j;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 
 	if (scale < 1.0) {
 		Depth = 3 * ((int)(log_2(scale * Height))) + 6 + 1.5 / scale;
 	}
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1591,11 +1603,10 @@ void gnomonic(void) {
 void azimuth(void) {
 	double x, y, z, x1, y1, z1, zz;
 	int i, j;
-	void planet0(double, double, double, int, int);
-
+	void planet0(double x, double y, double z, int i, int j);
 
 	for (j = 0; j < Height; j++) {
-		if (Height >= 25) { /* check line 728 for reasons */
+		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
 				fprintf(stderr, "+");
 				fflush(stderr);
@@ -1625,7 +1636,7 @@ void azimuth(void) {
 void conical(void) {
 	double k1, c, y2, x, y, zz, theta1, theta2, cos2;
 	int i, j;
-	void planet0(double, double, double, int, int);
+	void planet0(double x, double y, double z, int i, int j);
 
 	if (scale < 1.0) {
 		Depth = 3 * ((int)(log_2(scale * Height))) + 6 + 1.5 / scale;
@@ -1790,7 +1801,6 @@ void planet0(double x, double y, double z, int i, int j) {
 	if (hgrid != 0.0 || vgrid != 0.0) {yyy[i][j] = y;}
 	/* store shading info */
 	if (doshade > 0) {shades[i][j] = shade;}
-	return;
 }
 
 vertex ssa, ssb, ssc, ssd;
@@ -2031,7 +2041,6 @@ double planet1(double x, double y, double z) {
 
 }
 
-
 void printppm(FILE *outfile) { /* prints picture in PPM (portable pixel map) format */
 	int i, j, c, s;
 
@@ -2160,7 +2169,6 @@ void printbmp(FILE *outfile) { /* prints picture in BMP format */
 	putc(0, outfile);
 	putc(0, outfile);
 
-
 	putc(0, outfile); /* important colours (all) */
 	putc(0, outfile);
 	putc(0, outfile);
@@ -2265,7 +2273,6 @@ void printbmpBW(FILE *outfile) { /* prints picture in b/w BMP format */
 	putc(0, outfile);
 	putc(0, outfile);
 	putc(0, outfile);
-
 
 	putc(2, outfile); /* important colours (2) */
 	putc(0, outfile);
@@ -2430,14 +2437,17 @@ void print_help(void) {
 	exit(0);
 }
 
-void reportError(char c) {
-	fprintf(stderr, "Missing or bad argument to option -%c\n", c);
-	print_error();
-}
-
 void print_error(void) {
 	fprintf(stderr, "Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
 	fprintf(stderr, "Try \'planet -1\' for basic help, and \'planet -R\' for version information.\n");
 	fprintf(stderr, "See Manual.pdf for detailed help.\n");
-	exit(0);
+	exit(1);
+}
+
+void print_error_args(char c) {
+	fprintf(stderr, "Missing or bad argument to option -%c\n\n", c);
+	fprintf(stderr, "Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
+	fprintf(stderr, "Try \'planet -1\' for basic help, and \'planet -R\' for version information.\n");
+	fprintf(stderr, "See Manual.pdf for detailed help.\n");
+	exit(2);
 }
