@@ -3,19 +3,13 @@ Download link if you want to quickly run the program: https://github.com/Magical
 
 HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
-- `planet.c`: Torben's original code. Current version: July 2024.
+- `planet.c`: Torben's original code. Current version: 2024.07.22
 - `planet_mod.c`: The modified code.
 
-How I usually compile the program: `gcc -O2 -s -Wall -Wextra -pedantic -ansi planet.c -o planet -lm`  
-
-Warning: Currently this program depends on at least one color file in the executable directory, for when you don't specify any color files at all (ie. the default). Currently it is `Olsson.col`.  
-You can change which default file the program use in the code, but there's currently no way to embed the file into the program itself (ie. standalone).  
+Warning:  This program depends on at least one color file in the executable directory, for when you don't specify any color files at all (i.e. the default). Currently it is `Olsson.col`.  
+There's currently no way to embed the file into the program itself (ie. standalone).  
 More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
-```c
-char filename[256] = "planet-map";
-char colorsname[256] = "Olsson.col"; /* << change that */
-int do_file = 0, tmp = 0;
-```
+
 Changes from the original code:
 - Double orthographic projection with `-pO` by Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649
 - Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme (uses `-z -z` instead of `-z`).
@@ -23,8 +17,10 @@ Changes from the original code:
 - A little progress bar showing progress on creating planets (mostly adapted from Torben's old debug code).
 - Basic help information, accessible with `planet -1`.
 - A bunch of rewriting declarations and definitions to be more compliant with modern C.  
-- ~~Able to be compiled by MSVC.~~ Merged into upstream!  
+- Able to be compiled by MSVC.
+  - Merged into upstream!  
 - Enabling spaces in output file names and colors file names by switching `%s` to `%[^\n]`: https://topps.diku.dk/torbenm/thread.msp?topic=512274944  
+  - Merged into upstream!  
 
 All my changes are released under the same license as Torben's.
 ### Original readme file with copyright information
