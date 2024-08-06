@@ -1,9 +1,11 @@
 # These files are text and should be normalized (convert crlf =&gt; lf)
+*.bio     text eol=lf
 *.c       text eol=lf
 *.col     text eol=lf
 *.map     text eol=lf
 *.md      text eol=lf
 *.rgb     text eol=lf
+*.txt     text eol=lf 
 
 # Images should be treated as binary
 # (binary is a macro for -text -diff)
@@ -14,4 +16,5 @@
 *.xpm     binary
 
 *.exe     binary
+*.bin     binary
 *.pdf     binary
