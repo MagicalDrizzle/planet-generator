@@ -1285,8 +1285,8 @@ void peter(void) {
 			}
 		}
 	}
-	fprintf(stdout, "\n");
-	fprintf(stdout, "water percentage: %d%%", 100 * water / (water + land));
+	fprintf(stderr, "\n");
+	fprintf(stderr, "water percentage: %d%%", 100 * water / (water + land));
 }
 
 void squarep(void) {
