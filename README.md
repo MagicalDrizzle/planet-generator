@@ -1,14 +1,10 @@
-## planet-generator
-Download link if you want to quickly run the program: https://github.com/MagicalDrizzle/planet-generator/archive/refs/heads/main.zip
+## Torben's Planet Generator
+Download link if you simply want to run the program: https://github.com/MagicalDrizzle/planet-generator/archive/refs/heads/main.zip
 
 HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
 - `planet.c`: Torben's original code. Current version: 2024.07.22
 - `planet_mod.c`: The modified code.
-
-Warning:  This program depends on at least one color file in the executable directory, for when you don't specify any color files at all (i.e. the default). Currently it is `Olsson.col`.  
-There's currently no way to embed the file into the program itself (ie. standalone).  
-More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
 
 Changes from the original code:
 - Double orthographic projection with `-pO` by Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649
@@ -21,6 +17,8 @@ Changes from the original code:
   - Merged into upstream!  
 - Enabling spaces in output file names and colors file names by switching `%s` to `%[^\n]`: https://topps.diku.dk/torbenm/thread.msp?topic=512274944  
   - Merged into upstream!  
+- Enabling standalone usage with no color file! Currently achieved by manually embedding all 66 colors from Olsson.col - but maybe one day I will figure out Torben's interpolation math...  
+  - More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
 
 All my changes are released under the same license as Torben's.
 ### Original readme file with copyright information

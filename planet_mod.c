@@ -220,6 +220,7 @@ double rainShadow = 0.0; /* approximate rain shadow */
 
 int makeBiomes = 0; /* if 1, make biome map, if 2, use alternate biome palette */
 int biomesFromFile = 0; /* if 1, use biome colors from external file */
+int embeddedColor = 1; /* if 1, use embedded color palette, else rely on Olsson.col */
 
 int matchMap = 0;
 double matchSize = 0.1;
@@ -363,6 +364,7 @@ int main(int ac, char **av) {
 				fprintf(stdout, "Modified: https://github.com/MagicalDrizzle/planet-generator\n");
 				exit(0);
 			case 'C':
+				embeddedColor = 0;
 				if (++i < ac && sscanf(av[i], "%255[^\n]", colorsname)) break;
 				print_error_args('C');
 				break;
@@ -866,69 +868,147 @@ int main(int ac, char **av) {
 }
 
 void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname) {
-	int cNum = 0, oldcNum, i;
-	if (NULL == (colfile = fopen(colorsname, "r"))) {
-		fprintf(stderr, "Cannot open %s\n", colorsname);
-		if (strcmp(colorsname, "Olsson.col") == 0) {
-			fprintf(stderr, "Warning: planet does not support running as a standalone binary.\n");
-			fprintf(stderr, "It requires at least one color file in its directory, in case you \n");
-			fprintf(stderr, "didn't explicitly set a color file. The default name is Olsson.col.\n");
-			fprintf(stderr, "More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439\n");
+	if (embeddedColor == 0) {
+		int cNum = 0, oldcNum, i;
+		if (NULL == (colfile = fopen(colorsname, "r"))) {
+			fprintf(stderr, "Cannot open %s\n", colorsname);
+			/* delete when embeddedColor is mature (i.e not relying on manually */
+			/* writing 66 lines and instead use Torben's interpolation math) */
+			/*
+			if (strcmp(colorsname, "Olsson.col") == 0) {
+				fprintf(stderr, "Warning: planet does not support running as a standalone binary.\n");
+				fprintf(stderr, "It requires at least one color file in its directory, in case you \n");
+				fprintf(stderr, "didn't explicitly set a color file. The default name is Olsson.col.\n");
+				fprintf(stderr, "More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439\n");
+			}
+			*/
+			exit(1);
 		}
-		exit(1);
-	}
 
-	/* Format of colour file is a sequence of lines       */
-	/* each consisting of four integers:                  */
-	/*   colour_number red green blue                     */
-	/* where 0 <= colour_number <= 65535                  */
-	/* and 0<= red, green, blue <= 255                    */
-	/* The colour numbers must be increasing              */
-	/* The first colours have special uses:               */
-	/* 0 is usually black (0,0,0)                         */
-	/* 1 is usually white (255,255,255)                   */
-	/* 2 is the background colour                         */
-	/* 3 is used for latitude/longitude grid lines        */
-	/* 4 and 5 are used for outlines and contour lines    */
-	/* 6 upwards are used for altitudes                   */
-	/* Halfway between 6 and the max colour is sea level  */
-	/* Shallowest sea is (max+6)/2 and land is above this */
-	/* With 65536 colours, (max+6)/2 = 32770              */
-	/* Colours between specified are interpolated         */
+		/* Format of colour file is a sequence of lines       */
+		/* each consisting of four integers:                  */
+		/*   colour_number red green blue                     */
+		/* where 0 <= colour_number <= 65535                  */
+		/* and 0<= red, green, blue <= 255                    */
+		/* The colour numbers must be increasing              */
+		/* The first colours have special uses:               */
+		/* 0 is usually black (0,0,0)                         */
+		/* 1 is usually white (255,255,255)                   */
+		/* 2 is the background colour                         */
+		/* 3 is used for latitude/longitude grid lines        */
+		/* 4 and 5 are used for outlines and contour lines    */
+		/* 6 upwards are used for altitudes                   */
+		/* Halfway between 6 and the max colour is sea level  */
+		/* Shallowest sea is (max+6)/2 and land is above this */
+		/* With 65536 colours, (max+6)/2 = 32770              */
+		/* Colours between specified are interpolated         */
 
-	while (!feof(colfile)) {
-		int rValue, gValue, bValue, result = 0;
-		oldcNum = cNum; /* remember last colour number */
-		result = fscanf(colfile, " %d %d %d %d", &cNum, &rValue, &gValue, &bValue);
-		if (result > 0) {
-			if (cNum < oldcNum) cNum = oldcNum;
-			if (cNum > 65535) cNum = 65535;
-			rtable[cNum] = rValue;
-			gtable[cNum] = gValue;
-			btable[cNum] = bValue;
-			/* interpolate colours between oldcNum and cNum */
-			for (i = oldcNum + 1; i < cNum; i++) {
-				rtable[i] = (rtable[oldcNum] * (cNum - i) + rtable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
-				gtable[i] = (gtable[oldcNum] * (cNum - i) + gtable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
-				btable[i] = (btable[oldcNum] * (cNum - i) + btable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
+		while (!feof(colfile)) {
+			int rValue, gValue, bValue, result = 0;
+			oldcNum = cNum; /* remember last colour number */
+			result = fscanf(colfile, " %d %d %d %d", &cNum, &rValue, &gValue, &bValue);
+			if (result > 0) {
+				if (cNum < oldcNum) cNum = oldcNum;
+				if (cNum > 65535) cNum = 65535;
+				rtable[cNum] = rValue;
+				gtable[cNum] = gValue;
+				btable[cNum] = bValue;
+				/* interpolate colours between oldcNum and cNum */
+				for (i = oldcNum + 1; i < cNum; i++) {
+					rtable[i] = (rtable[oldcNum] * (cNum - i) + rtable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
+					gtable[i] = (gtable[oldcNum] * (cNum - i) + gtable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
+					btable[i] = (btable[oldcNum] * (cNum - i) + btable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
+				}
 			}
 		}
-	}
 
-	fclose(colfile);
+		fclose(colfile);
 
-	nocols = cNum + 1;
-	if (nocols < 10) nocols = 10;
+		nocols = cNum + 1;
+		if (nocols < 10) nocols = 10;
 
-	HIGHEST = nocols - 1;
-	SEA = (HIGHEST + LOWEST) / 2;
-	LAND = SEA + 1;
+		HIGHEST = nocols - 1;
+		SEA = (HIGHEST + LOWEST) / 2;
+		LAND = SEA + 1;
 
-	for (i = cNum + 1; i < nocols; i++) {
-		/* fill up rest of colour table with last read colour */
-		rtable[i] = rtable[cNum];
-		gtable[i] = gtable[cNum];
-		btable[i] = btable[cNum];
+		for (i = cNum + 1; i < nocols; i++) {
+			/* fill up rest of colour table with last read colour */
+			rtable[i] = rtable[cNum];
+			gtable[i] = gtable[cNum];
+			btable[i] = btable[cNum];
+		}
+	} else {
+		rtable[0] =   0, gtable[0] =   0, btable[0] =   0;
+		rtable[1] = 255, gtable[1] = 255, btable[1] = 255;
+		rtable[2] = 255, gtable[2] = 255, btable[2] = 255;
+		rtable[3] =   0, gtable[3] =   0, btable[3] =   0;
+		rtable[4] =   0, gtable[4] =   0, btable[4] =   0;
+		rtable[5] = 255, gtable[5] =   0, btable[5] =   0;
+		rtable[6] =   0, gtable[6] =  51, btable[6] = 119;
+		rtable[7] =   6, gtable[7] =  57, btable[7] = 123;
+		rtable[8] =  12, gtable[8] =  64, btable[8] = 128;
+		rtable[9] =  18, gtable[9] =  71, btable[9] = 132;
+		rtable[10] =  24, gtable[10] =  78, btable[10] = 137;
+		rtable[11] =  31, gtable[11] =  85, btable[11] = 141;
+		rtable[12] =  37, gtable[12] =  91, btable[12] = 146;
+		rtable[13] =  43, gtable[13] =  98, btable[13] = 150;
+		rtable[14] =  49, gtable[14] = 105, btable[14] = 155;
+		rtable[15] =  56, gtable[15] = 112, btable[15] = 159;
+		rtable[16] =  62, gtable[16] = 119, btable[16] = 164;
+		rtable[17] =  68, gtable[17] = 125, btable[17] = 168;
+		rtable[18] =  74, gtable[18] = 132, btable[18] = 173;
+		rtable[19] =  81, gtable[19] = 139, btable[19] = 177;
+		rtable[20] =  87, gtable[20] = 146, btable[20] = 182;
+		rtable[21] =  93, gtable[21] = 153, btable[21] = 187;
+		rtable[22] =  99, gtable[22] = 159, btable[22] = 191;
+		rtable[23] = 105, gtable[23] = 166, btable[23] = 196;
+		rtable[24] = 112, gtable[24] = 173, btable[24] = 200;
+		rtable[25] = 118, gtable[25] = 180, btable[25] = 205;
+		rtable[26] = 124, gtable[26] = 187, btable[26] = 209;
+		rtable[27] = 130, gtable[27] = 193, btable[27] = 214;
+		rtable[28] = 137, gtable[28] = 200, btable[28] = 218;
+		rtable[29] = 143, gtable[29] = 207, btable[29] = 223;
+		rtable[30] = 149, gtable[30] = 214, btable[30] = 227;
+		rtable[31] = 155, gtable[31] = 221, btable[31] = 232;
+		rtable[32] = 162, gtable[32] = 227, btable[32] = 236;
+		rtable[33] = 168, gtable[33] = 234, btable[33] = 241;
+		rtable[34] = 174, gtable[34] = 241, btable[34] = 245;
+		rtable[35] = 180, gtable[35] = 248, btable[35] = 250;
+		rtable[36] = 187, gtable[36] = 255, btable[36] = 255;
+		rtable[37] =   0, gtable[37] =  68, btable[37] =   0;
+		rtable[38] =  17, gtable[38] =  85, btable[38] =   0;
+		rtable[39] =  34, gtable[39] = 102, btable[39] =   0;
+		rtable[40] =  34, gtable[40] = 119, btable[40] =   0;
+		rtable[41] =  34, gtable[41] = 136, btable[41] =   0;
+		rtable[42] =  76, gtable[42] = 153, btable[42] =   0;
+		rtable[43] = 119, gtable[43] = 170, btable[43] =   0;
+		rtable[44] = 153, gtable[44] = 195, btable[44] =   0;
+		rtable[45] = 187, gtable[45] = 221, btable[45] =   0;
+		rtable[46] = 221, gtable[46] = 204, btable[46] =  17;
+		rtable[47] = 255, gtable[47] = 187, btable[47] =  34;
+		rtable[48] = 246, gtable[48] = 178, btable[48] =  34;
+		rtable[49] = 238, gtable[49] = 170, btable[49] =  34;
+		rtable[50] = 229, gtable[50] = 153, btable[50] =  34;
+		rtable[51] = 221, gtable[51] = 136, btable[51] =  34;
+		rtable[52] = 204, gtable[52] = 136, btable[52] =  34;
+		rtable[53] = 187, gtable[53] = 102, btable[53] =  34;
+		rtable[54] = 170, gtable[54] =  85, btable[54] =  34;
+		rtable[55] = 153, gtable[55] =  85, btable[55] =  34;
+		rtable[56] = 136, gtable[56] =  68, btable[56] =  34;
+		rtable[57] = 119, gtable[57] =  51, btable[57] =  34;
+		rtable[58] =  85, gtable[58] =  51, btable[58] =  17;
+		rtable[59] =  68, gtable[59] =  34, btable[59] =   0;
+		rtable[60] = 255, gtable[60] = 255, btable[60] = 255;
+		rtable[61] = 243, gtable[61] = 243, btable[61] = 243;
+		rtable[62] = 231, gtable[62] = 231, btable[62] = 231;
+		rtable[63] = 220, gtable[63] = 220, btable[63] = 220;
+		rtable[64] = 208, gtable[64] = 208, btable[64] = 208;
+		rtable[65] = 196, gtable[65] = 196, btable[65] = 196;
+		rtable[66] = 185, gtable[66] = 185, btable[66] = 185;
+		
+		nocols = 67, HIGHEST = 66, LOWEST = 6;
+		SEA = (HIGHEST + LOWEST) / 2;
+		LAND = SEA + 1;
 	}
 
 	if (makeBiomes == 1) {
