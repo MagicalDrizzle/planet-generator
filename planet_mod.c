@@ -908,7 +908,11 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 			int rValue, gValue, bValue, result = 0;
 			oldcNum = cNum; /* remember last colour number */
 			result = fscanf(colfile, " %d %d %d %d", &cNum, &rValue, &gValue, &bValue);
-			if (result > 0) {
+			if (result == 4 || result == EOF) {
+				if (rValue < 0 || rValue > 255 || gValue < 0 || gValue > 255 || bValue < 0 || bValue > 255) {
+					fprintf(stderr, "Color values can only be in range 0 - 255, check %s.\n", colorsname);
+					exit(1);
+				}
 				if (cNum < oldcNum) cNum = oldcNum;
 				if (cNum > 65535) cNum = 65535;
 				rtable[cNum] = rValue;
@@ -920,6 +924,9 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 					gtable[i] = (gtable[oldcNum] * (cNum - i) + gtable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
 					btable[i] = (btable[oldcNum] * (cNum - i) + btable[cNum] * (i - oldcNum)) / (cNum - oldcNum);
 				}
+			} else {
+				fprintf(stderr, "Incorrect format in %s.\n", colorsname);
+				exit(1);
 			}
 		}
 
@@ -1051,10 +1058,17 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 			char letter;
 			int rValue,  gValue, bValue, result = 0;
 			result = fscanf(colfile, " %c %d %d %d", &letter, &rValue, &gValue, &bValue);
-			if (result > 0 && strchr("ITGBDSFRWEO", letter) != NULL) {
+			if ((result == 4 || result == EOF) && strchr("ITGBDSFRWEO", letter) != NULL) {
+				if (rValue < 0 || rValue > 255 || gValue < 0 || gValue > 255 || bValue < 0 || bValue > 255) {
+					fprintf(stderr, "Color values can only be in range 0 - 255, check %s.\n", biocolorsname);
+					exit(1);
+				}
 				rtable[letter-64+LAND] = rValue;
 				gtable[letter-64+LAND] = gValue;
 				btable[letter-64+LAND] = bValue;
+			} else {
+				fprintf(stderr, "Incorrect format in %s.\n", biocolorsname);
+				exit(1);
 			}
 		}
 		break;
