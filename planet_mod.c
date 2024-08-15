@@ -219,9 +219,8 @@ double rainMin = 1000.0, rainMax = -1000.0;
 
 double rainShadow = 0.0; /* approximate rain shadow */
 
-int makeBiomes = 0; /* if 1, make biome map, if 2, use alternate biome palette */
-int biomesFromFile = 0; /* if 1, use biome colors from external file */
-int embeddedColor = 1; /* if 1, use embedded color palette, else rely on Olsson.col */
+int makeBiomes = 0; /* 1 = make biome map, 2 = use alternate biome palette, 3 = use custom palette */
+int customColor = 0; /* 0 = use embedded Olsson.col, 1 = use custom palette */
 
 int matchMap = 0;
 double matchSize = 0.1;
@@ -269,9 +268,9 @@ int main(int ac, char **av) {
 	void readcolors(FILE *colfile, const char *colorsname, const char *biocolorsname);
 	void readmap(void), makeoutline(int do_bw), smoothshades(void);
 	FILE *outfile, *colfile = NULL;
-	char filename[256] = "planet-map";
-	char colorsname[256] = "Olsson.col";
-	char biocolorsname[256] = "default.bio";
+	char filename[256];
+	char colorsname[256];
+	char biocolorsname[256];
 	int do_file = 0, tmp = 0;
 	double tx, ty, tz;
 
@@ -365,7 +364,7 @@ int main(int ac, char **av) {
 				fprintf(stdout, "Modified: https://github.com/MagicalDrizzle/planet-generator\n");
 				exit(0);
 			case 'C':
-				embeddedColor = 0;
+				customColor = 1;
 				if (++i < ac && sscanf(av[i], "%255[^\n]", colorsname)) break;
 				print_error_args('C');
 				break;
@@ -479,8 +478,7 @@ int main(int ac, char **av) {
 				break;
 			case 'Z':
 				if (++i < ac && sscanf(av[i], "%255[^\n]", biocolorsname)) {
-					biomesFromFile = 1;
-					makeBiomes = 1;
+					makeBiomes = 3;
 					break;
 				}
 				print_error_args('C');
@@ -871,11 +869,11 @@ int main(int ac, char **av) {
 }
 
 void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname) {
-	if (embeddedColor == 0) {
+	if (customColor == 1) {
 		int cNum = 0, oldcNum, i;
 		if (NULL == (colfile = fopen(colorsname, "r"))) {
 			fprintf(stderr, "Cannot open %s\n", colorsname);
-			/* delete when embeddedColor is mature (i.e not relying on manually */
+			/* delete when customColor is mature (i.e not relying on manually */
 			/* writing 66 lines and instead use Torben's interpolation math) */
 			/*
 			if (strcmp(colorsname, "Olsson.col") == 0) {
@@ -1014,7 +1012,9 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 		LAND = SEA + 1;
 	}
 
-	if (makeBiomes == 1) {
+	switch (makeBiomes) {
+	case 0: break;
+	case 1:
 		/* set default biome colours */
 		rtable['I' - 64 + LAND] = 255, gtable['I' - 64 + LAND] = 255, btable['I' - 64 + LAND] = 255;
 		rtable['T' - 64 + LAND] = 210, gtable['T' - 64 + LAND] = 210, btable['T' - 64 + LAND] = 210;
@@ -1027,7 +1027,8 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 		rtable['W' - 64 + LAND] = 185, gtable['W' - 64 + LAND] = 150, btable['W' - 64 + LAND] = 160;
 		rtable['E' - 64 + LAND] = 130, gtable['E' - 64 + LAND] = 190, btable['E' - 64 + LAND] =  25;
 		rtable['O' - 64 + LAND] = 110, gtable['O' - 64 + LAND] = 160, btable['O' - 64 + LAND] = 170;
-	} else if (makeBiomes == 2) {
+		break;
+	case 2:
 		/* alternate biome colors from: https://space.geometrian.com/calcs/climate-sim.php) */
 		rtable['I' - 64 + LAND] = 255, gtable['I' - 64 + LAND] = 255, btable['I' - 64 + LAND] = 255;
 		rtable['T' - 64 + LAND] = 151, gtable['T' - 64 + LAND] = 169, btable['T' - 64 + LAND] = 173;
@@ -1040,25 +1041,23 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 		rtable['W' - 64 + LAND] = 185, gtable['W' - 64 + LAND] = 150, btable['W' - 64 + LAND] = 160;
 		rtable['E' - 64 + LAND] = 130, gtable['E' - 64 + LAND] = 190, btable['E' - 64 + LAND] =  25;
 		rtable['O' - 64 + LAND] =  26, gtable['O' - 64 + LAND] =  82, btable['O' - 64 + LAND] =  44;
-	}
-
-	if (makeBiomes) {
-		if (biomesFromFile == 1) {
-			if (NULL == (colfile = fopen(biocolorsname, "r"))) {
-				fprintf(stderr, "Cannot open %s\n", biocolorsname);
-				exit(1);
-			}
-			while (!feof(colfile)) {
-				char letter;
-				int rValue,  gValue, bValue, result = 0;
-				result = fscanf(colfile, " %c %d %d %d", &letter, &rValue, &gValue, &bValue);
-				if (result > 0 && strchr("ITGBDSFRWEO", letter) != NULL) {
-					rtable[letter-64+LAND] = rValue;
-					gtable[letter-64+LAND] = gValue;
-					btable[letter-64+LAND] = bValue;
-				}
+		break;
+	case 3:
+		if (NULL == (colfile = fopen(biocolorsname, "r"))) {
+			fprintf(stderr, "Cannot open %s\n", biocolorsname);
+			exit(1);
+		}
+		while (!feof(colfile)) {
+			char letter;
+			int rValue,  gValue, bValue, result = 0;
+			result = fscanf(colfile, " %c %d %d %d", &letter, &rValue, &gValue, &bValue);
+			if (result > 0 && strchr("ITGBDSFRWEO", letter) != NULL) {
+				rtable[letter-64+LAND] = rValue;
+				gtable[letter-64+LAND] = gValue;
+				btable[letter-64+LAND] = bValue;
 			}
 		}
+		break;
 	}
 }
 
