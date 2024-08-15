@@ -19,8 +19,6 @@ Changes from the original code:
   - Merged into upstream!  
 - Enabling standalone usage with no color file! Currently achieved by manually embedding all 66 colors from Olsson.col - but maybe one day I will figure out Torben's interpolation math...  
   - More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
-- todo:  
-  - implement input validation on col files just like map files  
 
 All my changes are released under the same license as Torben's.
 ### Original readme file with copyright information
