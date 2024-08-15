@@ -3,7 +3,7 @@ Download link if you simply want to run the program: https://github.com/MagicalD
 
 HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
-- `planet.c`: Torben's original code. Current version: 2024.07.22
+- `planet.c`: Torben's original code. Current version: 2024.08.14
 - `planet_mod.c`: The modified code.
 
 Changes from the original code:
@@ -20,7 +20,6 @@ Changes from the original code:
 - Enabling standalone usage with no color file! Currently achieved by manually embedding all 66 colors from Olsson.col - but maybe one day I will figure out Torben's interpolation math...  
   - More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
 - todo:  
-  - check why -M with no argument freezes  
   - implement input validation on col files just like map files  
 
 All my changes are released under the same license as Torben's.
