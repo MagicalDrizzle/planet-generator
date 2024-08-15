@@ -845,7 +845,6 @@ int main(int ac, char **av) {
 
 	if (doshade > 0) smoothshades();
 
-	fprintf(stdout, "\n");
 	/* plot picture */
 	switch (file_type) {
 	case ppm:
@@ -864,6 +863,8 @@ int main(int ac, char **av) {
 		printheights(outfile);
 		break;
 	}
+	/* print new line after making pictures */
+	fprintf(stderr, "\n");
 	return(0);
 }
 
@@ -1727,8 +1728,8 @@ void conical(void) {
 		y2 = sqrt(c * (1.0 - sin(lat / k1)) / (1.0 + sin(lat / k1)));
 		for (j = 0; j < Height; j++) {
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stdout, "+");
-				fflush(stdout);
+				fprintf(stderr, "+");
+				fflush(stderr);
 			}
 			for (i = 0; i < Width ; i++) {
 				x = (2.0 * i - Width) / Height / scale;
@@ -1762,8 +1763,8 @@ void conical(void) {
 		y2 = sqrt(c * (1.0 - sin(lat / k1)) / (1.0 + sin(lat / k1)));
 		for (j = 0; j < Height; j++) {
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stdout, "+");
-				fflush(stdout);
+				fprintf(stderr, "+");
+				fflush(stderr);
 			}
 			for (i = 0; i < Width ; i++) {
 				x = (2.0 * i - Width) / Height / scale;
