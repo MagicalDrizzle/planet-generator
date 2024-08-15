@@ -2,7 +2,7 @@
 /* planet generating program */
 /* Copyright 1988--present Torben AE. Mogensen */
 
-char version[] = "September 2023";
+char version[] = "August 14 2024";
 
 /* The program generates planet maps based on recursive spatial subdivision */
 /* of a tetrahedron containing the globe. The output is a colour BMP bitmap. */
@@ -201,7 +201,8 @@ int Width = 800, Height = 600; /* default map size */
 unsigned short **col;  /* colour array */
 int **heights;         /* heightfield array */
 double **xxx, **yyy, **zzz; /* x,y,z arrays  (used for gridlines */
-int cl0[60][30]; /* search map */
+int cl0[1000][1000]; /* match map */
+int MatchWidth = 48, MatchHeight = 24;
 
 int do_outline = 0;  /* if 1, draw coastal outline */
 int do_bw = 0;       /* if 1, reduce map to black outline on white */
@@ -415,18 +416,17 @@ char **av;
                    break;
         case 'H' : file_type = heightfield;
                    break;
-        case 'M' : if (++i < ac && sscanf(av[i],"%lf",&matchSize)) {
-                     matchMap = 1;
-    	             break;
-		   }
-		   reportError('M');
+        case 'M' : if (i+1 < ac && sscanf(av[i+1],"%lf",&matchSize)) i++;
+	           else matchSize = 0.1;
+                   matchMap = 1;
+    	           break;
         case 'a' : if (++i < ac && sscanf(av[i],"%lf",&shade_angle)) break;
 		   reportError('a');
         case 'A' : if (++i < ac && sscanf(av[i],"%lf",&shade_angle2)) break;
 		   reportError('A');
         case 'i' : if (++i < ac && sscanf(av[i],"%lf",&M)) break;
 		   reportError('i');
-      case 'T' : if (++i < ac && sscanf(av[i]," %lf",&rotate2))
+        case 'T' : if (++i < ac && sscanf(av[i]," %lf",&rotate2))
 		     if (++i < ac && sscanf(av[i]," %lf",&rotate1)) {
                        while (rotate1<-180) rotate1 += 360;
                        while (rotate1>180) rotate1 -= 360;
@@ -1000,15 +1000,24 @@ void makeoutline(int do_bw)
 
 void readmap()  /* reads in a map for matching */
 {
-  int i,j;
+  int i,j = 0, step = 1;
   double y;
-  char c;
-  int Width, Height;
+  char c, cs[1000];
+  int Width, Height = 0;
 
-  Width = 48; Height = 24;
-  for (j = 0; j < Height; j+=2) {
-    for(i = 0; i < Width ; i+=2) {
-      c = getchar();
+  do {
+    scanf("%255[^\n]\n",cs); /* read line */
+    /* fprintf(stderr,"%s\n",cs); */
+  
+    Width = strlen(cs);
+    if (Width<48) {
+      MatchWidth = 2*Width;
+      step = 2;
+    }
+    else MatchWidth = Width;
+
+    for(i = 0; i < MatchWidth ; i+=step) {
+      c = cs[i/step];
       switch (c) {
       case '.': cl0[i][j] = -8;
                 break;
@@ -1028,18 +1037,27 @@ void readmap()  /* reads in a map for matching */
                 break;
       case '@': cl0[i][j] = 8;
                 break;
-      default: printf("Wrong map symbol: %c\n",c);
+      default: fprintf(stderr,"Wrong map symbol: %c\n",c);
       }
     }
-    c = getchar(); if (c!='\n') printf("Wrong map format: %c\n",c);
+    Height++;
+    j += step;
   }
-  /* interpolate */
-  for (j = 1; j < Height; j+=2)
-    for(i = 0; i < Width ; i+=2)
-      cl0[i][j] = (cl0[i][j-1] + cl0[i][(j+1)])/2;
-  for (j = 0; j < Height; j++)
-    for(i = 1; i < Width ; i+=2)
-      cl0[i][j] = (cl0[i-1][j] + cl0[(i+1)%Width][j])/2;
+  while (!feof(stdin));
+  
+  MatchHeight = step*Height;
+
+  /* fprintf(stderr,"%d %d\n",MatchWidth,MatchHeight); */
+
+  if (step==2) {
+    /* interpolate */
+    for (j = 1; j < MatchHeight; j+=2)
+      for(i = 0; i < MatchWidth ; i+=2)
+	cl0[i][j] = (cl0[i][j-1] + cl0[i][(j+1)])/2;
+    for (j = 0; j < MatchHeight; j++)
+      for(i = 1; i < MatchWidth ; i+=2)
+	cl0[i][j] = (cl0[i-1][j] + cl0[(i+1)%MatchWidth][j])/2;
+  }
 }
 
 
@@ -1674,8 +1692,8 @@ int level;                  /* levels to go */
       if (matchMap && lab > matchSize) { /* use map height */
         double l, xx, yy;
         l = sqrt(e.x*e.x+e.y*e.y+e.z*e.z);
-        yy = asin(e.y/l)*23/PI+11.5;
-        xx = atan2(e.x,e.z)*23.5/PI+23.5;
+        yy = asin(e.y/l)*(MatchHeight-1)/PI+(MatchHeight-1)/2.0;
+	xx = atan2(e.x,e.z)*(MatchWidth-1)/2.0/PI+(MatchWidth-1)/2.0;
         e.h = cl0[(int)(xx+0.5)][(int)(yy+0.5)]*0.1/8.0;
       } else {
         if (lab>1.0) lab = pow(lab,0.5);
