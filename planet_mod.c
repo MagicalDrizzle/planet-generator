@@ -435,13 +435,13 @@ int main(int ac, char **av) {
 				file_type = heightfield;
 				break;
 			case 'M':
-				if (i + 1 < ac && sscanf(av[i], "%lf", &matchSize)) {
+				if (i + 1 < ac && sscanf(av[i + 1], "%lf", &matchSize)) { 
 					i++;
 				} else {
 					matchSize = 0.1;
-					matchMap = 1;
-					break;
 				}
+				matchMap = 1;
+				break;
 			case 'a':
 				if (++i < ac && sscanf(av[i], "%lf", &shade_angle)) break;
 				print_error_args('a');
