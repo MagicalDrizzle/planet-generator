@@ -17,7 +17,8 @@ Changes from the original code:
   - Merged into upstream!  
 - Enabling spaces in output file names and colors file names by switching `%s` to `%[^\n]`: https://topps.diku.dk/torbenm/thread.msp?topic=512274944  
   - Merged into upstream!  
-- Enabling standalone usage with no color file! Currently achieved by manually embedding all 66 colors from Olsson.col - but maybe one day I will figure out Torben's interpolation math...  
+- Enabling standalone usage with no color file! Figured out Torben's interpolation math :3  
+  - You can now easily embed custom color files! Check line 931 in `planet_mod.c`.  
   - More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
 
 All my changes are released under the same license as Torben's.
