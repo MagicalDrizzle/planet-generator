@@ -1,25 +1,23 @@
 ## Torben's Planet Generator
 Download link if you simply want to run the program: https://github.com/MagicalDrizzle/planet-generator/archive/refs/heads/main.zip
 
-HTTPS mirror of Torben Mogensen's planet generator along with modifications I and others made.  
+First created as a https mirror of Torben's planet generator as the original site doesn't have https support, but then somehow turned into my little fork/playground.  
 Original site (warning - no https support): http://hjemmesider.diku.dk/~torbenm/Planet/  
 - `planet.c`: Torben's original code. Current version: 2024.08.14
 - `planet_mod.c`: The modified code.
 
 Changes from the original code:
-- Double orthographic projection with `-pO` by Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649
-- Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme (uses `-z -z` instead of `-z`).
-- Better version information printing (program will now exit after printing).
-- A little progress bar showing progress on creating planets (mostly adapted from Torben's old debug code).
-- Basic help information, accessible with `planet -1`.
-- A bunch of rewriting declarations and definitions to be more compliant with modern C.  
-- Able to be compiled by MSVC.
-  - Merged into upstream!  
-- Enabling spaces in output file names and colors file names by switching `%s` to `%[^\n]`: https://topps.diku.dk/torbenm/thread.msp?topic=512274944  
-  - Merged into upstream!  
-- Enabling standalone usage with no color file! Figured out Torben's interpolation math :3  
-  - You can now easily embed custom color files! Check line 931 in `planet_mod.c`.  
-  - More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
+- Features:
+  - Double orthographic projection with `-pO` by Riviera71: https://topps.diku.dk/torbenm/thread.msp?topic=218566649
+  - Addition of Ian Mallet's [Climate Simulator](https://space.geometrian.com/calcs/climate-sim.php) biomes color scheme (uses `-z -z` instead of `-z`).  
+  - Enabling standalone usage with no color file!  
+    - You can now easily embed custom color files! Check line 931 in `planet_mod.c`.  
+    - More information: https://topps.diku.dk/torbenm/thread.msp?topic=392461439  
+- QoL:
+  - Better version information printing (program will now exit after printing).
+  - A little progress bar showing progress on creating planets (mostly adapted from Torben's old debug code).
+  - Basic help information, accessible with `planet -1`.
+  - A bunch of rewriting declarations and definitions to be more compliant with modern C.  
 
 All my changes are released under the same license as Torben's.
 ### Original readme file with copyright information
