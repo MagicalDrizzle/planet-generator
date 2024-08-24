@@ -307,9 +307,9 @@ int main(int ac, char **av) {
 	outfile = stdout;
 
 #ifdef WIN32
-	_setmode(fileno(outfile), O_BINARY);
+	_setmode(_fileno(outfile), O_BINARY);
 #elif _WIN32
-	_setmode(fileno(outfile), O_BINARY);
+	_setmode(_fileno(outfile), O_BINARY);
 #endif
 
 	strcpy(cmdLine, "");
@@ -579,9 +579,9 @@ int main(int ac, char **av) {
 	} else {
 		outfile = stdout;
 #ifdef WIN32
-		_setmode(fileno(outfile), O_BINARY);
+		_setmode(_fileno(outfile), O_BINARY);
 #elif _WIN32
-		_setmode(fileno(outfile), O_BINARY);
+		_setmode(_fileno(outfile), O_BINARY);
 #endif
 	}
 
