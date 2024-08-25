@@ -481,7 +481,7 @@ int main(int ac, char **av) {
 					makeBiomes = 3;
 					break;
 				}
-				print_error_args('C');
+				print_error_args('Z');
 				break;
 			case 'p':
 				if (strlen(av[i]) > 2) {
