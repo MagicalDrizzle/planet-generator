@@ -120,7 +120,7 @@ char letters[64] = {
    O = tropical rainforest, I = icecap */
 
 /* Whittaker diagram */
-char biomes[46][45] = { /* + null terminator just to be safe, real size: [45][45] */
+const char biomes[46][45] = { /* + null terminator just to be safe, real size: [45][45] */
 	"IIITTTTTGGGGGGGGDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 	"IIITTTTTGGGGGGGGDDDDGGDSDDSDDDDDDDDDDDDDDDDDD",
 	"IITTTTTTTTTBGGGGGGGGGGGSSSSSSDDDDDDDDDDDDDDDD",
