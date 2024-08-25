@@ -120,8 +120,7 @@ char letters[64] = {
    O = tropical rainforest, I = icecap */
 
 /* Whittaker diagram */
-/* add space for null terminator just to be safe, we aren't treating these as strings */
-char biomes[46][45] = { /* real size: [45][45] */
+char biomes[46][45] = { /* + null terminator just to be safe, real size: [45][45] */
 	"IIITTTTTGGGGGGGGDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 	"IIITTTTTGGGGGGGGDDDDGGDSDDSDDDDDDDDDDDDDDDDDD",
 	"IITTTTTTTTTBGGGGGGGGGGGSSSSSSDDDDDDDDDDDDDDDD",
@@ -924,11 +923,7 @@ void readcolors(FILE *colfile, const char* colorsname, const char* biocolorsname
 		fclose(colfile);
 	} else {
 		int arrayCol;
-		const char *colorArray[60] = {
-			/* Maximum number of lines (not counting blank ones). You *can* write 65536 here as */
-			/* the maximum count is 65536 colors, but that bloats the binary size like crazy... */
-			/* 60 is a good compromise, if you need more, simply bumps the number up. */
-			/* For example, Olsson.col embedded here contain just 27 lines. */
+		const char *colorArray[] = {
 			"0 0 0 0",
 			"1 255 255 255",
 			"2 255 255 255",
