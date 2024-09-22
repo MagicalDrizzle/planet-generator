@@ -120,7 +120,8 @@ char letters[64] = {
    O = tropical rainforest, I = icecap */
 
 /* Whittaker diagram */
-const char biomes[46][45] = { /* + null terminator just to be safe, real size: [45][45] */
+/* add space for null terminator just to be safe, we aren't treating these as strings */
+const char biomes[46][45] = { /* real size: [45][45] */
 	"IIITTTTTGGGGGGGGDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 	"IIITTTTTGGGGGGGGDDDDGGDSDDSDDDDDDDDDDDDDDDDDD",
 	"IITTTTTTTTTBGGGGGGGGGGGSSSSSSDDDDDDDDDDDDDDDD",
@@ -1139,11 +1140,11 @@ void makeoutline(int do_bw) {
 
 void readmap(void) { /* reads in a map for matching */
 	int i, j = 0, step = 1;
-	char c, cs[1000];
+	char c, cs[1001];
 	int Width, Height = 0;
 
 	do {
-		scanf("%255[^\n]\n", cs); /* read line */
+		scanf("%1000[^\n]\n", cs); /* read line */
 		/* fprintf(stderr,"%s\n",cs); */
 
 		Width = strlen(cs);
