@@ -2,7 +2,7 @@
 /* planet generating program */
 /* Copyright 1988--present Torben AE. Mogensen */
 
-char version[] = "2024.08.14-mod";
+char version[] = "2024.08.14-mod-1";
 
 /* Dual hemispheres orthographic projection from Riviera71 */
 /* https://topps.diku.dk/torbenm/thread.msp?topic=218566649 */
@@ -514,7 +514,7 @@ int main(int ac, char **av) {
 					print_error();
 				}
 				break;
-			case '1':
+			case '?':
 				print_help();
 				break;
 			default:
@@ -541,7 +541,7 @@ int main(int ac, char **av) {
 		fprintf(stdout, "Note: you probably either double clicked the executable, or ran the program without any arguments.\n");
 		fprintf(stdout, "This will fill your terminal with random garbage for a while and possibly cause it to lag.\n");
 		fprintf(stdout, "Open a terminal window here and type '%s' along with some arguments instead.\n", binname);
-		fprintf(stdout, "You can access help with '%s -1'.\nPress ENTER to exit...", binname);
+		fprintf(stdout, "You can access help with '%s -?'.\nPress ENTER to exit...", binname);
 		getchar();
 		exit(1);
 	}
@@ -2525,7 +2525,7 @@ void print_help(void) {
 
 void print_error(void) {
 	fprintf(stderr, "Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
-	fprintf(stderr, "Try \'planet -1\' for basic help, and \'planet -R\' for version information.\n");
+	fprintf(stderr, "Try \'planet -?\' for basic help, and \'planet -R\' for version information.\n");
 	fprintf(stderr, "See Manual.pdf for detailed help.\n");
 	exit(1);
 }
@@ -2533,7 +2533,7 @@ void print_error(void) {
 void print_error_args(char c) {
 	fprintf(stderr, "Missing or bad argument to option -%c\n\n", c);
 	fprintf(stderr, "Basic usage: planet -s [seed] -w [width] -h [height] -p[projection] -o [outfile]\n");
-	fprintf(stderr, "Try \'planet -1\' for basic help, and \'planet -R\' for version information.\n");
+	fprintf(stderr, "Try \'planet -?\' for basic help, and \'planet -R\' for version information.\n");
 	fprintf(stderr, "See Manual.pdf for detailed help.\n");
 	exit(2);
 }

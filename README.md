@@ -16,7 +16,7 @@ Changes from the original code:
 - QoL:
   - Better version information printing (program will now exit after printing).
   - A little progress bar showing progress on creating planets (mostly adapted from Torben's old debug code).
-  - Basic help information, accessible with `planet -1`.
+  - Basic help information, accessible with `planet -?`.
   - A bunch of rewriting declarations and definitions to be more compliant with modern C.  
 
 All my changes are released under the same license as Torben's.
