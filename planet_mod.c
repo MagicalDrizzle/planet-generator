@@ -121,7 +121,7 @@ char letters[64] = {
 
 /* Whittaker diagram */
 /* add space for null terminator just to be safe, we aren't treating these as strings */
-const char biomes[46][45] = { /* real size: [45][45] */
+const char biomes[45][46] = { /* real size: [45][45] */
 	"IIITTTTTGGGGGGGGDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 	"IIITTTTTGGGGGGGGDDDDGGDSDDSDDDDDDDDDDDDDDDDDD",
 	"IITTTTTTTTTBGGGGGGGGGGGSSSSSSDDDDDDDDDDDDDDDD",
