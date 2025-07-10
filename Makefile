@@ -4,10 +4,10 @@
 CC=cc
 
 # And change this to your favourite C compiler flags:
-CFLAGS = -O2 -s -flto -w -ansi
+CFLAGS = -O2 -s -w -ansi
 # Original code is very old - have to disable warnings else it will vomit walls in your face
 # I have attempted to "modernize" the code in my modified version.
-CFLAGS_MOD = -O2 -s -flto -Wall -Wextra -pedantic -ansi
+CFLAGS_MOD = -O2 -s -Wall -Wextra -pedantic -ansi
 LIBS = -lm
 
 all:	planet planet_mod
