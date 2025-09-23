@@ -542,8 +542,10 @@ int main(int ac, char **av) {
 		fprintf(stdout, "This will fill your terminal with random garbage for a while and possibly cause it to lag.\n");
 		fprintf(stdout, "Open a terminal window here and type '%s' along with some arguments instead.\n", binname);
 		fprintf(stdout, "You can access help with '%s -?'.\nPress ENTER to exit...", binname);
-		getchar();
-		exit(1);
+		if (getchar()==EOF) {
+			fprintf(stdout, "\n");
+        }
+	    exit(1);
 	}
 	readcolors(colfile, colorsname, biocolorsname);
 
