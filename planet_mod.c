@@ -544,8 +544,8 @@ int main(int ac, char **av) {
 		fprintf(stdout, "You can access help with '%s -?'.\nPress ENTER to exit...", binname);
 		if (getchar()==EOF) {
 			fprintf(stdout, "\n");
-        }
-	    exit(1);
+		}
+		exit(1);
 	}
 	readcolors(colfile, colorsname, biocolorsname);
 
@@ -1237,7 +1237,7 @@ void mercator(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1266,7 +1266,7 @@ void peter(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1307,7 +1307,7 @@ void squarep(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1339,7 +1339,7 @@ void mollweide(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1388,7 +1388,7 @@ void sinusoid(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1429,7 +1429,7 @@ void stereo(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1458,7 +1458,7 @@ void orthographic(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1491,7 +1491,7 @@ void orthographic2(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1547,7 +1547,7 @@ void icosahedral(void) { /* modified version of gnomonic */
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1669,7 +1669,7 @@ void gnomonic(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1696,7 +1696,7 @@ void azimuth(void) {
 	for (j = 0; j < Height; j++) {
 		if (Height >= 25) { /* check line 743 for reasons */
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 		}
@@ -1735,7 +1735,7 @@ void conical(void) {
 		y2 = sqrt(c * (1.0 - sin(lat / k1)) / (1.0 + sin(lat / k1)));
 		for (j = 0; j < Height; j++) {
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 			for (i = 0; i < Width ; i++) {
@@ -1770,7 +1770,7 @@ void conical(void) {
 		y2 = sqrt(c * (1.0 - sin(lat / k1)) / (1.0 + sin(lat / k1)));
 		for (j = 0; j < Height; j++) {
 			if ((j % (Height / 25)) == 0) {
-				fprintf(stderr, "+");
+				fprintf(stderr, ">");
 				fflush(stderr);
 			}
 			for (i = 0; i < Width ; i++) {
